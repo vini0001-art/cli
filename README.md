@@ -95,7 +95,9 @@ export default function Home() {
 - Contribua: Pull Requests e Issues são bem-vindos!
 # S4FT - Framework Web Brasileiro
 
-[Repositório Oficial no GitHub](https://github.com/s4ftframework/S4ft-Plataforma.git)
+[Repositório Oficial no GitHub](https://github.com/s4ftframework/s4ft-cli.git)
+ou 
+[Repositório alternativo de testes no GitHub](https://github.com/agenciafikriharika/s4ft-cli-framework.git)
 
 O **S4FT** é um framework web brasileiro inspirado no Next.js, focado em produtividade, simplicidade e experiência moderna para desenvolvimento com React. Ele utiliza arquivos `.s4ft` para páginas/componentes, oferece hot reload, build otimizado, CLI própria e suporte total a ES Modules.
 
@@ -241,29 +243,6 @@ Hospede seus projetos S4FT facilmente na plataforma oficial [https://www.s4ft.fu
 | **Enterprise**| R$ 99/mês  | Equipes e empresas          | Tudo do Pro<br>Deploy edge<br>Escalabilidade automática<br>Suporte dedicado<br>SLA garantido | [Falar com Vendas](https://www.s4ft.fun/contato) |
 
 > Todos os planos incluem integração total com o framework S4FT e deploy simplificado.
-
----
-
-## 💚 Apoie o Projeto S4FT
-
-O S4FT é um framework brasileiro open source, mantido com dedicação para a comunidade. Se você gostou do projeto, considere fazer uma doação para ajudar a manter e evoluir a plataforma!
-
-### Para brasileiros 🇧🇷
-
-- **PIX:**  
-  Chave: **doacao@s4ft.fun**
-
-- **Stripe (cartão de crédito):**  
-  [Doar a partir de R$ 5,00](https://buy.stripe.com/4gM5kE16MfCb4b72C60sU00)
-
-### Para não brasileiros 🌎
-
-- **Stripe (credit card):**  
-  [Donate from $5 USD](https://buy.stripe.com/fZu7sMg1G3Tt7nj4Ke0sU01)
-
-> Os valores sugeridos começam em R$ 5,00 (cinco reais) ou $5 USD, mas você pode ajustar conforme desejar.
-
-Sua contribuição faz toda a diferença para o crescimento do S4FT e da comunidade open source nacional!
 
 ---
 

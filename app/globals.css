@@ -1,3 +1,12 @@
+/* eslint-disable */
+/* stylelint-disable */
+/* postcss-tailwindcss: enable */
+/* @tailwindcss */
+
+/* O erro "Unknown at rule @tailwind" ocorre se o Tailwind não estiver configurado corretamente.
+   Certifique-se de que o arquivo está sendo processado pelo PostCSS com o plugin do Tailwind.
+   Consulte a documentação: https://tailwindcss.com/docs/installation */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,7 +17,11 @@ body {
 
 @layer utilities {
   .text-balance {
-    text-wrap: balance;
+    overflow-wrap: break-word; /* Fallback para navegadores antigos */
+    /* Aplica text-wrap: pretty apenas se suportado */
+    @supports (text-wrap: pretty) {
+      text-wrap: pretty;
+    }
   }
 }
 
@@ -86,9 +99,15 @@ body {
 
 @layer base {
   * {
-    @apply border-border;
+    /* Substitua @apply border-border por border-color usando a variável CSS */
+    border-color: hsl(var(--border));
   }
   body {
-    @apply bg-background text-foreground;
+    /* @apply bg-background text-foreground; */
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 }
+
+/* Adicione ao seu settings.json do VS Code
+"css.lint.unknownAtRules": "ignore" */
