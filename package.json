@@ -42,7 +42,8 @@
     "ora": "latest",
     "path": "latest",
     "terser": "latest",
-    "utf-8-validate": "latest"
+    "utf-8-validate": "latest",
+    "ws": "^8.18.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",

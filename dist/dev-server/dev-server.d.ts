@@ -11,6 +11,7 @@ export declare class DevServer {
     private transpiler;
     constructor(options: DevServerOptions);
     private setupMiddleware;
+    private setupBundleRoute;
     private setupRoutes;
     private generateIndexHTML;
     private handleAPIRoutes;

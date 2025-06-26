@@ -26,7 +26,7 @@ export class DevServer {
     this.transpiler = new Transpiler()
 
     this.setupMiddleware()
-    this.setupBundleRoute() // <-- Registra o /app-bundle.js antes das rotas dinâmicas
+    this.setupBundleRoute()
     this.setupRoutes()
     this.server = createServer(this.app)
     this.wss = new ws.WebSocketServer({ server: this.server })
@@ -39,7 +39,6 @@ export class DevServer {
     this.app.use(express.json())
   }
 
-  // Rota para servir o bundle da aplicação (precisa vir antes das rotas dinâmicas)
   private setupBundleRoute(): void {
     this.app.get("/app-bundle.js", async (req, res) => {
       try {
@@ -52,17 +51,12 @@ export class DevServer {
   }
 
   private setupRoutes(): void {
-    // Página inicial customizada
     this.app.get("/", (req, res) => {
       const htmlContent = this.generateIndexHTML()
       res.send(htmlContent)
     })
-
-    // Rotas de API
-    this.app.use("/api", this.handleAPIRoutes.bind(this))
-
-    // Rotas dinâmicas de página
-    this.app.get("*", this.handlePageRoutes.bind(this))
+    this.app.get("/api/:endpoint", this.handleAPIRoutes.bind(this))
+    this.app.use(this.handlePageRoutes.bind(this)) // <- Corrigido aqui
   }
 
   private generateIndexHTML(): string {
@@ -137,15 +131,17 @@ export class DevServer {
   }
 
   private async handleAPIRoutes(req: express.Request, res: express.Response): Promise<void> {
-    const apiPath = req.path.slice(1)
+    const apiPath = req.params.endpoint
+    if (!apiPath) {
+      res.status(400).json({ error: "API path inválido ou ausente" })
+      return
+    }
     const apiFile = path.join(this.options.appDir, "api", `${apiPath}.sft`)
-
     if (await fs.pathExists(apiFile)) {
       try {
         const content = await fs.readFile(apiFile, "utf-8")
         const parser = new Parser(content)
         const ast = parser.parse()
-        const jsCode = this.transpiler.transpile(ast)
         res.json({ message: "API route handled", path: apiPath })
       } catch (error) {
         res.status(500).json({ error: (error as Error).message })
@@ -160,9 +156,7 @@ export class DevServer {
     if (pagePath.endsWith("/")) {
       pagePath += "page"
     }
-
     const pageFile = path.join(this.options.appDir, `${pagePath}.sft`)
-
     if (await fs.pathExists(pageFile)) {
       const htmlContent = this.generateIndexHTML()
       res.send(htmlContent)
@@ -186,17 +180,14 @@ export class DevServer {
       path.join(this.options.projectRoot, "components/**/*.sft"),
       path.join(this.options.projectRoot, "styles/**/*.css"),
     ])
-
     watcher.on("change", (filePath) => {
       console.log(`File changed: ${filePath}`)
       this.notifyClients("reload")
     })
-
     watcher.on("add", (filePath) => {
       console.log(`File added: ${filePath}`)
       this.notifyClients("reload")
     })
-
     watcher.on("unlink", (filePath) => {
       console.log(`File removed: ${filePath}`)
       this.notifyClients("reload")
@@ -228,38 +219,27 @@ export class DevServer {
       }
     }
 
-    // Add app initialization code
+    // Não crie o App padrão! Apenas renderize o App gerado pelo transpiler
     bundleCode += `
-// Initialize the app
-const App = () => {
-  return React.createElement('div', null, 's4ft App Running!');
-};
-
 ReactDOM.render(React.createElement(App), document.getElementById('root'));
     `
-
     return bundleCode
   }
 
   private async finds4ftFiles(dir: string): Promise<string[]> {
     const files: string[] = []
-
     if (!(await fs.pathExists(dir))) {
       return files
     }
-
     const entries = await fs.readdir(dir, { withFileTypes: true })
-
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name)
-
       if (entry.isDirectory()) {
         files.push(...(await this.finds4ftFiles(fullPath)))
       } else if (entry.name.endsWith(".sft")) {
         files.push(fullPath)
       }
     }
-
     return files
   }
 
@@ -276,4 +256,14 @@ ReactDOM.render(React.createElement(App), document.getElementById('root'));
     this.server.close()
     this.wss.close()
   }
+}
+
+// Ponto de entrada: só execute se chamado diretamente (não em import)
+if (require.main === module) {
+  const server = new DevServer({
+    projectRoot: process.cwd(),
+    appDir: path.join(process.cwd(), "app"),
+    port: 3000
+  })
+  server.start()
 }

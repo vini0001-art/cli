@@ -18,6 +18,7 @@ class DevServer {
         this.app = (0, express_1.default)();
         this.transpiler = new transpiler_js_1.Transpiler();
         this.setupMiddleware();
+        this.setupBundleRoute();
         this.setupRoutes();
         this.server = (0, http_1.createServer)(this.app);
         this.wss = new ws_1.default.WebSocketServer({ server: this.server });
@@ -28,16 +29,24 @@ class DevServer {
         this.app.use(express_1.default.static(path_1.default.join(this.options.projectRoot, "public")));
         this.app.use(express_1.default.json());
     }
+    setupBundleRoute() {
+        this.app.get("/app-bundle.js", async (req, res) => {
+            try {
+                const bundle = await this.getAppBundle();
+                res.type("application/javascript").send(bundle);
+            }
+            catch (error) {
+                res.status(500).send(`// Error generating bundle: ${error.message}`);
+            }
+        });
+    }
     setupRoutes() {
-        // Serve the main HTML file
         this.app.get("/", (req, res) => {
             const htmlContent = this.generateIndexHTML();
             res.send(htmlContent);
         });
-        // API routes
-        this.app.use("/api", this.handleAPIRoutes.bind(this));
-        // Dynamic page routes
-        this.app.get("*", this.handlePageRoutes.bind(this));
+        this.app.get("/api/:endpoint", this.handleAPIRoutes.bind(this));
+        this.app.use(this.handlePageRoutes.bind(this)); // <- Corrigido aqui
     }
     generateIndexHTML() {
         return `
@@ -110,15 +119,17 @@ class DevServer {
     `;
     }
     async handleAPIRoutes(req, res) {
-        const apiPath = req.path.slice(1); // Remove leading slash
+        const apiPath = req.params.endpoint;
+        if (!apiPath) {
+            res.status(400).json({ error: "API path inválido ou ausente" });
+            return;
+        }
         const apiFile = path_1.default.join(this.options.appDir, "api", `${apiPath}.sft`);
         if (await fs_extra_1.default.pathExists(apiFile)) {
             try {
                 const content = await fs_extra_1.default.readFile(apiFile, "utf-8");
                 const parser = new parser_js_1.Parser(content);
                 const ast = parser.parse();
-                const jsCode = this.transpiler.transpile(ast);
-                // For simplicity, we'll just return a placeholder response
                 res.json({ message: "API route handled", path: apiPath });
             }
             catch (error) {
@@ -178,7 +189,6 @@ class DevServer {
             }
         });
     }
-    // Add route to serve the transpiled app bundle
     async getAppBundle() {
         const appFiles = await this.finds4ftFiles(this.options.appDir);
         let bundleCode = "";
@@ -194,13 +204,11 @@ class DevServer {
                 console.error(`Error transpiling ${file}:`, error);
             }
         }
-        // Add app initialization code
         bundleCode += `
 // Initialize the app
 const App = () => {
   return React.createElement('div', null, 's4ft App Running!');
 };
-
 ReactDOM.render(React.createElement(App), document.getElementById('root'));
     `;
         return bundleCode;
@@ -224,16 +232,6 @@ ReactDOM.render(React.createElement(App), document.getElementById('root'));
     }
     start() {
         return new Promise((resolve) => {
-            // Add the app bundle route
-            this.app.get("/app-bundle.js", async (req, res) => {
-                try {
-                    const bundle = await this.getAppBundle();
-                    res.type("application/javascript").send(bundle);
-                }
-                catch (error) {
-                    res.status(500).send(`// Error generating bundle: ${error.message}`);
-                }
-            });
             this.server.listen(this.options.port, () => {
                 console.log(`🚀 s4ft dev server running on http://localhost:${this.options.port}`);
                 resolve();
@@ -246,4 +244,13 @@ ReactDOM.render(React.createElement(App), document.getElementById('root'));
     }
 }
 exports.DevServer = DevServer;
+// Ponto de entrada: só execute se chamado diretamente (não em import)
+if (require.main === module) {
+    const server = new DevServer({
+        projectRoot: process.cwd(),
+        appDir: path_1.default.join(process.cwd(), "app"),
+        port: 3000
+    });
+    server.start();
+}
 //# sourceMappingURL=dev-server.js.map
