@@ -1,0 +1,54 @@
+{
+  "name": "s4ft-framework",
+  "version": "1.0.0",
+  "private": false,
+  "description": "**s4ft** (Simple And Fast Templates) is a declarative web development language and framework inspired by Next.js. It provides an intuitive syntax for building modern web applications with built-in routing, state management, and component architecture.",
+  "main": "./dist/index.js",
+  "bin": {
+    "s4ft": "./dist/bin/s4ft.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "node dist/dev-server/dev-server.js",
+    "start": "node dist/index.js",
+    "cli": "node dist/bin/s4ft.js",
+    "postinstall": "node ./bin/postinstall.js"
+  },
+  "directories": {
+    "lib": "lib",
+    "example": "examples"
+  },
+  "keywords": [
+    "framework",
+    "s4ft",
+    "javascript",
+    "typescript",
+    "frontend",
+    "fullstack",
+    "web-framework",
+    "react",
+    "nextjs-alternative"
+  ],
+  "author": "Marcos Dresbach",
+  "license": "MIT",
+  "dependencies": {
+    "bufferutil": "latest",
+    "chalk": "latest",
+    "chokidar": "latest",
+    "commander": "latest",
+    "express": "latest",
+    "fs-extra": "latest",
+    "http": "latest",
+    "ora": "latest",
+    "path": "latest",
+    "terser": "latest",
+    "utf-8-validate": "latest"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22",
+    "postcss": "^8.5",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5"
+  }
+}

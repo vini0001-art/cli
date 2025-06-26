@@ -1,0 +1,46 @@
+// Home page - demonstrates basic s4ft syntax
+page HomePage {
+  state {
+    count: number = 0,
+    message: string = "Welcome to s4ft!",
+    todos: array = []
+  }
+  
+  event incrementCount() {
+    // This would be transpiled to setCount(count + 1)
+  }
+  
+  event addTodo(text: string) {
+    // Add new todo to the list
+  }
+  
+  <div className="home-container">
+    <header>
+      <h1>{message}</h1>
+      <p>A declarative web framework inspired by Next.js</p>
+    </header>
+    
+    <main>
+      <section className="counter-section">
+        <h2>Counter Example</h2>
+        <p>Current count: {count}</p>
+        <button onClick={incrementCount}>
+          Increment
+        </button>
+      </section>
+      
+      <section className="features-section">
+        <h2>s4ft Features</h2>
+        <ul>
+          <li>Declarative component syntax</li>
+          <li>Built-in state management</li>
+          <li>File-based routing</li>
+          <li>Hot reload development</li>
+          <li>Production-ready builds</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+}
+
+export HomePage;
