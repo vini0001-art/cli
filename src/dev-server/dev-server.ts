@@ -6,6 +6,11 @@ import path from "path"
 import fs from "fs-extra"
 import { Parser } from "../parser/parser.js"
 import { Transpiler } from "../transpiler/transpiler.js"
+import { renderToString } from "react-dom/server";
+import middleware from "../../middleware"; // ajuste o caminho se necessário
+import authMiddleware from "../../authMiddleware";
+import corsMiddleware from "../../corsMiddleware";
+import config from "../s4ft.config";
 
 export interface DevServerOptions {
   port: number
@@ -23,6 +28,9 @@ export class DevServer {
   constructor(options: DevServerOptions) {
     this.options = options
     this.app = express()
+    this.app.use(middleware) // <-- aqui você ativa o middleware
+    this.app.use(corsMiddleware);
+    this.app.use(authMiddleware);
     this.transpiler = new Transpiler()
 
     this.setupMiddleware()
@@ -32,6 +40,7 @@ export class DevServer {
     this.wss = new ws.WebSocketServer({ server: this.server })
     this.setupWebSocket()
     this.setupFileWatcher()
+    this.setupPlugins();
   }
 
   private setupMiddleware(): void {
@@ -151,18 +160,93 @@ export class DevServer {
     }
   }
 
+  // Adicione este método na classe DevServer:
+  private async matchDynamicRoute(reqPath: string): Promise<{ file: string, params: Record<string, string> } | null> {
+    const appFiles = await this.finds4ftFiles(this.options.appDir);
+    for (const file of appFiles) {
+      const relPath = path.relative(this.options.appDir, file).replace(/\\/g, "/");
+      // Exemplo: posts/[id].sft vira /posts/:id
+      const routePattern = relPath
+        .replace(/\.sft$/, "")
+        .replace(/\[([^\]]+)\]/g, ":$1");
+      // Cria regex para comparar a rota
+      const regexPattern = "^/" + routePattern.replace(/:[^/]+/g, "([^/]+)") + "$";
+      const regex = new RegExp(regexPattern);
+      const match = reqPath.match(regex);
+      if (match) {
+        // Extrai os nomes dos parâmetros
+        const paramNames = [...relPath.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]);
+        const paramValues = match.slice(1);
+        const params: Record<string, string> = {};
+        paramNames.forEach((name, i) => params[name] = paramValues[i]);
+        return { file, params };
+      }
+    }
+    return null;
+  }
+
+  // Modifique o método handlePageRoutes para usar a busca dinâmica:
   private async handlePageRoutes(req: express.Request, res: express.Response): Promise<void> {
-    let pagePath = req.path === "/" ? "/page" : req.path
+    let pagePath = req.path === "/" ? "/page" : req.path;
     if (pagePath.endsWith("/")) {
-      pagePath += "page"
+      pagePath += "page";
     }
-    const pageFile = path.join(this.options.appDir, `${pagePath}.sft`)
-    if (await fs.pathExists(pageFile)) {
-      const htmlContent = this.generateIndexHTML()
-      res.send(htmlContent)
-    } else {
-      res.status(404).send("Page not found")
+    const pageFile = path.join(this.options.appDir, `${pagePath}.sft`);
+    let sftFile = pageFile;
+    let params: Record<string, string> = {};
+
+    if (!(await fs.pathExists(pageFile))) {
+      // Tenta encontrar rota dinâmica
+      const dynamicMatch = await this.matchDynamicRoute(req.path);
+      if (dynamicMatch) {
+        sftFile = dynamicMatch.file;
+        params = dynamicMatch.params;
+      } else {
+        res.status(404).send("Page not found");
+        return;
+      }
     }
+
+    // Transpile o .sft para React
+    const content = await fs.readFile(sftFile, "utf-8");
+    const parser = new Parser(content);
+    const ast = parser.parse();
+    const jsCode = this.transpiler.transpile(ast);
+
+    // Crie o componente React dinamicamente
+    // (Aqui é um exemplo simplificado, idealmente use require-from-string ou transpile para um módulo)
+    // Supondo que jsCode exporta um componente chamado PageComponent
+    let PageComponent;
+    try {
+      // eslint-disable-next-line no-eval
+      PageComponent = eval(`(function(require, module, exports){${jsCode}; return module.exports.PageComponent || module.exports.default;})`)(require, {exports:{}}, {});
+    } catch (e) {
+      res.status(500).send("Erro ao compilar componente: " + e);
+      return;
+    }
+
+    // Renderize para HTML usando SSR
+    let html = "";
+    try {
+      html = renderToString(PageComponent ? PageComponent(params) : null);
+    } catch (e) {
+      res.status(500).send("Erro ao renderizar componente: " + e);
+      return;
+    }
+
+    // Envie o HTML renderizado
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="pt-br">
+        <head>
+          <meta charset="UTF-8">
+          <title>S4FT SSR</title>
+        </head>
+        <body>
+          <div id="root">${html}</div>
+        </body>
+      </html>
+    `);
   }
 
   private setupWebSocket(): void {
@@ -243,6 +327,27 @@ ReactDOM.render(React.createElement(App), document.getElementById('root'));
     return files
   }
 
+  private setupPlugins(): void {
+    const hooks = {
+      onRoute: (route, handler) => this.app.use(route, handler),
+      onBuild: (fn) => buildHooks.push(fn),
+      onRender: (fn) => renderHooks.push(fn),
+      // ...outros hooks
+    };
+
+    for (const plugin of config.plugins) {
+      let mod = plugin;
+      if (typeof plugin === "string") {
+        mod = require(plugin); // carrega do node_modules
+      }
+      if (mod && typeof mod.setup === "function") {
+        mod.setup(hooks);
+      } else if (typeof mod === "function") {
+        mod(hooks);
+      }
+    }
+  }
+
   public start(): Promise<void> {
     return new Promise((resolve) => {
       this.server.listen(this.options.port, () => {
@@ -266,4 +371,9 @@ if (require.main === module) {
     port: 3000
   })
   server.start()
+}
+
+// No .sft
+export async function getServerSideProps(context) {
+  return { props: { ... } }
 }

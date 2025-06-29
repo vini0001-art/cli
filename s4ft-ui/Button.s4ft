@@ -1,0 +1,8 @@
+component Button {
+  props {
+    children: ReactNode
+    onClick: () => void
+  }
+  <button className="btn" onClick={onClick}>{children}</button>
+}
+export Button;

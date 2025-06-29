@@ -2,7 +2,21 @@
 
 ## Sobre o S4FT
 
-O S4FT é um framework brasileiro inspirado no Next.js, focado em produtividade, simplicidade e experiência moderna para desenvolvimento web com React. Ele utiliza arquivos `.s4ft` para definir páginas e componentes, oferece hot reload, build otimizado, CLI própria e suporte total a ES Modules.
+O S4FT é um framework brasileiro inspirado no Next.js, focado em produtividade, simplicidade e experiência moderna para desenvolvimento web com React. Ele utiliza arquivos `.s4ft` para definir páginas e componentes, oferece hot reload, build otimizado, CLI própria, suporte total a ES Modules e um ecossistema de plugins.
+
+---
+
+## Novidades e Diferenciais
+
+- 🔌 **Ecossistema de Plugins:** Instale plugins via CLI e adicione recursos sem mexer no core.
+- 🪝 **Hooks e ciclo de vida:** Personalize build, SSR, rotas e renderização via `s4ft.config.ts`.
+- 🧩 **UI nativa:** Biblioteca de componentes visuais pronta para uso.
+- 🚀 **Deploy integrado:** Deploy 1 comando para [s4ft.fun](https://www.s4ft.fun) e integração com GitHub Actions.
+- 🗃️ **Diretórios especiais:** Suporte a `/system`, `/s4ft-ui`, `/studio` para experiências avançadas.
+- 🧠 **Editor visual (Studio):** Edite `.s4ft` no navegador com live preview (experimental).
+- 🔥 **Hot reload real:** APIs, componentes, configs e assets recarregam automaticamente.
+- 🧱 **Sintaxe .s4ft declarativa:** Menos boilerplate, mais produtividade.
+- ✨ **Suporte a pages/ (pages router) e app/ (layout router):** Escolha via `s4ft.config.ts`.
 
 ---
 
@@ -33,216 +47,184 @@ O S4FT é um framework brasileiro inspirado no Next.js, focado em produtividade,
 - `pnpm start`  
   Inicia o servidor em modo produção.
 
+- `pnpm export`  
+  Gera uma versão estática do site para hospedagem sem servidor (arquivos .html e .json prontos para CDN).
+
 - `s4ft`  
   Acesso à CLI do framework (após link global).
 
 ---
 
-## Estrutura de Pastas
+## CLI Modular
 
-- `app/`  
-  Páginas e rotas da aplicação (arquivos `.s4ft`).
+A CLI do S4FT pode ser estendida com comandos como:
 
-- `components/`  
-  Componentes reutilizáveis.
-
-- `public/`  
-  Arquivos estáticos (imagens, ícones, etc).
-
-- `styles/`  
-  Arquivos CSS globais.
-
-- `src/`  
-  Código-fonte do framework (não altere para projetos de usuário).
-
-- `examples/`  
-  Exemplos de apps usando o S4FT.
+```bash
+s4ft plugin new my-plugin
+s4ft component generate Button
+s4ft studio
+```
 
 ---
 
-## Como funciona?
+## Sintaxe .s4ft
 
-- O S4FT transpila arquivos `.s4ft` para React.
-- O dev server serve as páginas, faz hot reload e recarrega o navegador automaticamente.
-- Rotas são baseadas na estrutura de pastas dentro de `app/`.
-- Rotas de API podem ser criadas em `app/api/` usando arquivos `.sft`.
+O .s4ft é uma linguagem declarativa baseada em JSX simplificado, interpretado como React sob o capô.
+
+Exemplo:
+
+```s4ft
+<Page title="Sobre">
+  <Section>
+    <Text>Olá, mundo</Text>
+    <Button onClick="handleClick">Clique aqui</Button>
+  </Section>
+</Page>
+```
 
 ---
 
-## Exemplo de Página
+## Plugins
 
-Arquivo: `app/page.s4ft`
-```jsx
-export default function Home() {
-  return <h1>Bem-vindo ao S4FT!</h1>
+Instale plugins facilmente:
+
+```bash
+s4ft plugin add s4ft-plugin-auth-github
+s4ft plugin add s4ft-plugin-drive
+```
+
+Exemplo de uso no `s4ft.config.ts`:
+
+```typescript
+export default {
+  plugins: [
+    's4ft-plugin-auth-github',
+    's4ft-plugin-drive',
+    customAnalyticsPlugin({ token: 'abc123' })
+  ]
+}
+```
+
+Cada plugin pode usar hooks do ciclo de vida:
+
+```typescript
+export function setup({ onRoute, onBuild, onRender }) {
+  onRoute('/api/auth/github', (req, res) => { /* ... */ });
+  onBuild(() => { /* ... */ });
 }
 ```
 
 ---
 
-## Dicas
+## Plugins com UI no Studio
 
-- Use apenas imports relativos terminando com `.js` nos arquivos do framework.
-- Para destacar o caráter brasileiro, utilize exemplos nacionais e contribua com a comunidade.
-- Consulte o README.md para mais detalhes e exemplos.
+Plugins com interface gráfica podem ser integrados ao Studio visual e adicionados como blocos arrastáveis.
 
 ---
 
-## Suporte
-
-- Documentação: [README.md](./README.md)
-- Comunidade: (adicione link do Discord/Telegram se houver)
-- Contribua: Pull Requests e Issues são bem-vindos!
-# S4FT - Framework Web Brasileiro
-
-[Repositório Oficial no GitHub](https://github.com/s4ftframework/s4ft-cli.git)
-ou 
-[Repositório alternativo de testes no GitHub](https://github.com/agenciafikriharika/s4ft-cli-framework.git)
-
-O **S4FT** é um framework web brasileiro inspirado no Next.js, focado em produtividade, simplicidade e experiência moderna para desenvolvimento com React. Ele utiliza arquivos `.s4ft` para páginas/componentes, oferece hot reload, build otimizado, CLI própria e suporte total a ES Modules.
-
----
-
-## 🚀 Principais Recursos
-
-- **Arquivos `.s4ft`**: Sintaxe semelhante ao React/JSX para páginas e componentes.
-- **Hot Reload**: Atualização instantânea no navegador ao salvar arquivos.
-- **CLI própria**: Comandos para criar, rodar e buildar projetos.
-- **Rotas automáticas**: Baseadas na estrutura de pastas em `app/`.
-- **Rotas de API**: Crie endpoints facilmente em `app/api/`.
-- **Build otimizado**: Pronto para produção.
-- **Totalmente ES Modules**: Imports relativos terminando com `.js`.
-- **Documentação e exemplos em português**.
-
----
-
-## 📦 Instalação
-
-1. **Pré-requisitos**  
-   - Node.js 18+
-   - pnpm (ou npm/yarn)
-
-2. **Clone o projeto e instale as dependências**
-   ```sh
-   git clone https://github.com/seu-usuario/s4ft.git
-   cd s4ft-cli
-   pnpm install
-   ```
-
-3. **(Opcional) Link global para usar a CLI**
-   ```sh
-   pnpm link --global
-   ```
-
----
-
-## 🛠️ Comandos
-
-- `pnpm dev` — Inicia o servidor de desenvolvimento com hot reload.
-- `pnpm build` — Gera o build de produção.
-- `pnpm start` — Inicia o servidor em modo produção.
-- `s4ft` — Acesso à CLI do framework (após link global).
-
----
-
-## 📁 Estrutura do Projeto
+## Estrutura de Pastas
 
 ```
 app/           # Páginas e rotas (.s4ft)
+pages/         # (Opcional) Pages router
+api/           # Rotas de API (.sft)
 components/    # Componentes reutilizáveis
 public/        # Arquivos estáticos
 styles/        # CSS global
-src/           # Código-fonte do framework
-examples/      # Exemplos de apps
+system/        # Componentes de sistema (ex: Window.s4ft)
+s4ft-ui/       # Biblioteca de UI nativa (ex: Button.s4ft)
+studio/        # Editor visual (experimental)
+s4ft.config.ts # Configuração principal do framework
 ```
 
 ---
 
-## ✨ Como funciona?
+## s4ft.config.ts
 
-- O S4FT transpila arquivos `.s4ft` para React.
-- O dev server serve as páginas, faz hot reload e recarrega o navegador automaticamente.
-- Rotas são baseadas na estrutura de pastas dentro de `app/`.
-- Rotas de API podem ser criadas em `app/api/` usando arquivos `.sft`.
+Arquivo de configuração central. Exemplo:
 
----
-
-## 📝 Exemplo de Página
-
-Arquivo: `app/page.s4ft`
-```jsx
-export default function Home() {
-  return <h1>Bem-vindo ao S4FT!</h1>
+```typescript
+export default {
+  port: 3000,
+  env: { API_URL: "https://api.meusite.com" },
+  experimental: { ssr: true, ssg: false },
+  router: "app", // ou "pages"
+  hooks: {
+    onRouteLoad: (path) => console.log("Nova rota:", path),
+    onBuild: () => console.log("Build iniciado!"),
+    onSSR: (ctx) => console.log("SSR executado!", ctx)
+  },
+  plugins: [
+    's4ft-plugin-auth-github',
+    's4ft-plugin-drive'
+  ],
+  watch: ["app/**/*.sft", "components/**/*.sft", "styles/**/*.css", "s4ft.config.ts"],
+  ui: {
+    enabled: true,
+    theme: "default",
+    plugins: ["auth-github", "drive"]
+  },
+  deploy: { provider: "s4ft.fun", githubIntegration: true }
 }
 ```
 
 ---
 
-## 🔥 Hot Reload
+## Exemplos de Plugins
 
-Ao salvar qualquer arquivo `.s4ft` ou `.css`, o navegador recarrega automaticamente.
-
----
-
-## 🧩 Rotas de API
-
-Crie endpoints em `app/api/` usando arquivos `.sft`.  
-Exemplo: `app/api/users.sft`
+- **s4ft-plugin-auth-github:** Login via GitHub
+- **s4ft-plugin-drive:** Upload para Google Drive
+- **s4ft-plugin-analytics:** Painel de stats
+- **s4ft-plugin-components:** Biblioteca de UI global
+- **s4ft-plugin-pwa:** Suporte a PWA
+- **s4ft-plugin-docs:** Geração automática de documentação
 
 ---
 
-## 🇧🇷 Caráter Brasileiro
+## Studio Visual
 
-- Documentação e exemplos em português.
-- Foco em facilitar o onboarding de devs brasileiros.
-- Sinta-se à vontade para contribuir com exemplos nacionais!
+Acesse `/studio` para editar e visualizar `.s4ft` ao vivo (experimental).
 
 ---
 
-## 🤝 Contribuição
+## Deploy
 
-Pull Requests e Issues são bem-vindos!  
-Siga o padrão de imports relativos com `.js` para garantir compatibilidade com ES Modules.
+Faça deploy do seu projeto com um comando:
 
----
-
-## 📚 Mais informações
-
-- [INSTRUCOES.txt](./INSTRUCOES.txt) — Guia rápido e instruções detalhadas.
-- Exemplos em `examples/basic-app/`.
+```bash
+s4ft deploy --target s4ft.fun
+```
 
 ---
 
-## 📞 Suporte
+## Estrutura real recomendada
 
-- Comunidade: (adicione link do Discord/Telegram se houver)
-- Dúvidas e sugestões: abra uma Issue!
-
----
-
-## ☁️ Hospedagem Oficial
-
-Você pode hospedar seus projetos S4FT facilmente na nossa plataforma oficial: [https://www.s4ft.fun](https://www.s4ft.fun)
-
-- Deploy simples e rápido.
-- Suporte dedicado para projetos brasileiros.
-- Ideal para portfólios, landing pages, APIs e aplicações completas.
-
-Saiba mais em [https://www.s4ft.fun](https://www.s4ft.fun).
+```
+app/
+  layout.s4ft
+  page.s4ft
+api/
+  hello.sft
+```
 
 ---
 
-## 🏆 Planos de Hospedagem S4FT
+## Testes
 
-Hospede seus projetos S4FT facilmente na plataforma oficial [https://www.s4ft.fun](https://www.s4ft.fun) e aproveite planos flexíveis para todos os perfis:
+Em breve: `s4ft test` com suporte a Jest + testes E2E via Playwright.
 
-| Plano         | Preço      | Indicado para                | Recursos principais                                                                 | Ação                        |
-|---------------|------------|-----------------------------|-------------------------------------------------------------------------------------|-----------------------------|
-| **Free**      | R$ 0/mês   | Projetos pessoais           | Até 3 projetos<br>Subdomínio gratuito<br>Deploy manual<br>Suporte básico            | [Começar Grátis](https://www.s4ft.fun) |
-| **Pro** <br>Mais Popular | R$ 29/mês  | Desenvolvedores profissionais | Projetos ilimitados<br>Domínios personalizados<br>Deploy automático<br>Analytics avançado<br>Suporte prioritário | [Começar Teste](https://www.s4ft.fun)  |
-| **Enterprise**| R$ 99/mês  | Equipes e empresas          | Tudo do Pro<br>Deploy edge<br>Escalabilidade automática<br>Suporte dedicado<br>SLA garantido | [Falar com Vendas](https://www.s4ft.fun/contato) |
+---
 
-> Todos os planos incluem integração total com o framework S4FT e deploy simplificado.
+## 🚧 Roadmap
+
+- [x] CLI com suporte a build/dev/start
+- [x] Plugins com hooks
+- [x] Deploy automático via s4ft.fun
+- [x] Studio visual experimental
+- [ ] Editor visual estável
+- [ ] Sistema de autenticação nativo
+- [ ] Marketplace de plugins
+- [ ] Painel web de deploy e status
 
 ---
 

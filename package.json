@@ -41,6 +41,7 @@
     "http": "latest",
     "ora": "latest",
     "path": "latest",
+    "react-dom": "^19.1.0",
     "terser": "latest",
     "utf-8-validate": "latest",
     "ws": "^8.18.2"

@@ -1,0 +1,11 @@
+component Window {
+  props {
+    title: string
+    children: ReactNode
+  }
+  <div className="window">
+    <div className="window-title">{title}</div>
+    <div className="window-content">{children}</div>
+  </div>
+}
+export Window;

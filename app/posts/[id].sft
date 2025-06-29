@@ -1,0 +1,32 @@
+// Página dinâmica de exemplo para /posts/[id]
+
+page PostPage {
+  props {
+    id: string
+  }
+
+  state {
+    post: object = {}
+  }
+
+  onMount() {
+    // Exemplo: buscar dados do post usando o id
+    fetch(`/api/posts/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        post = data
+      })
+  }
+
+  <div>
+    <h1>Post: {id}</h1>
+    <div>
+      <b>Título:</b> {post.title}
+    </div>
+    <div>
+      <b>Conteúdo:</b> {post.content}
+    </div>
+  </div>
+}
+
+export PostPage;
