@@ -6,7 +6,7 @@ import path from "path"
 import fs from "fs-extra"
 import { Parser } from "../parser/parser.js"
 import { Transpiler } from "../transpiler/transpiler.js"
-import { renderToString } from "react-dom/server";
+import { renderToString } from "react-dom/server"
 import middleware from "../middleware.js"; // ajuste: inclua a extensão se estiver usando ES Modules
 // import authMiddleware from "../../authMiddleware";
 import cors from "cors";
@@ -86,12 +86,13 @@ export class DevServer {
   }
 
   private setupRoutes(): void {
-    this.app.get("/", (req, res) => {
-      const htmlContent = this.generateIndexHTML()
-      res.send(htmlContent)
-    })
+    // Remova ou comente as linhas abaixo:
+    // this.app.get("/", (req, res) => {
+    //   const htmlContent = this.generateIndexHTML()
+    //   res.send(htmlContent)
+    // })
     this.app.get("/api/:endpoint", this.handleAPIRoutes.bind(this))
-    this.app.use(this.handlePageRoutes.bind(this)) // <- Corrigido aqui
+    this.app.use(this.handlePageRoutes.bind(this)) // SSR para todas as rotas, inclusive "/"
   }
 
   private generateIndexHTML(): string {
@@ -261,13 +262,8 @@ export class DevServer {
     }
 
     // Envie o HTML renderizado
-    res.send(`
-      <!DOCTYPE html>
-      <html lang="pt-br">
-        <head>
-          <meta charset="UTF-8">
-          <title>S4FT SSR</title>
-        </head>
+    res.end(`
+      <html>
         <body>
           <div id="root">${html}</div>
         </body>
@@ -329,10 +325,14 @@ export class DevServer {
       }
     }
 
-    // Não crie o App padrão! Apenas renderize o App gerado pelo transpiler
-    bundleCode += `
-ReactDOM.render(React.createElement(App), document.getElementById('root'));
-    `
+    // Remova ou comente este bloco:
+    // bundleCode += `
+    // const App = () => {
+    //   return React.createElement('div', null, 's4ft App Running!');
+    // };
+    // ReactDOM.render(React.createElement(App), document.getElementById('root'));
+    // `
+
     return bundleCode
   }
 
@@ -364,15 +364,17 @@ ReactDOM.render(React.createElement(App), document.getElementById('root'));
       // ...outros hooks
     };
 
-    for (const plugin of config.plugins) {
-      let mod = plugin;
-      if (typeof plugin === "string") {
-        mod = require(plugin); // carrega do node_modules
-      }
-      if (mod && typeof mod.setup === "function") {
-        mod.setup(hooks);
-      } else if (typeof mod === "function") {
-        mod(hooks);
+    if (Array.isArray(config.plugins)) {
+      for (const plugin of config.plugins) {
+        let mod = plugin;
+        if (typeof plugin === "string") {
+          mod = require(plugin); // carrega do node_modules
+        }
+        if (mod && typeof mod.setup === "function") {
+          mod.setup(hooks);
+        } else if (typeof mod === "function") {
+          mod(hooks);
+        }
       }
     }
   }

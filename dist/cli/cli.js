@@ -110,6 +110,53 @@ program
         console.log(chalk_1.default.green(`🚀 s4ft app serving on http://localhost:${port}`));
     });
 });
+program
+    .command("new <app-name>")
+    .option("--layout <layout>", "Escolha o layout", "system")
+    .option("--auth <provider>", "Adicione autenticação", "github")
+    .action(async (appName, options) => {
+    const projectPath = path_1.default.join(process.cwd(), appName);
+    // Cria estrutura básica
+    await fs_extra_1.default.ensureDir(projectPath);
+    await fs_extra_1.default.ensureDir(path_1.default.join(projectPath, "system"));
+    await fs_extra_1.default.ensureDir(path_1.default.join(projectPath, "auth"));
+    // Cria arquivo de layout em /system
+    const layoutFile = `// Layout principal gerado automaticamente
+layout SystemLayout {
+  props {
+    children: ReactNode
+  }
+  <div className="system-layout">
+    <header>S4FT System Layout</header>
+    <main>{children}</main>
+    <footer>Rodapé do sistema</footer>
+  </div>
+}
+export SystemLayout;
+`;
+    await fs_extra_1.default.writeFile(path_1.default.join(projectPath, "system", "layout.sft"), layoutFile);
+    // Cria arquivo de autenticação em /auth
+    const authFile = `// Provider de autenticação gerado automaticamente
+auth ${options.auth.charAt(0).toUpperCase() + options.auth.slice(1)}Auth {
+  // Configuração do provedor ${options.auth}
+  // Exemplo: clientId, clientSecret, redirectUri, etc.
+}
+export ${options.auth.charAt(0).toUpperCase() + options.auth.slice(1)}Auth;
+`;
+    await fs_extra_1.default.writeFile(path_1.default.join(projectPath, "auth", `${options.auth}.sft`), authFile);
+    // Mensagem de sucesso
+    console.log(`Novo projeto ${appName} com layout ${options.layout} e auth ${options.auth}`);
+    console.log(chalk_1.default.blue("Estrutura criada:"));
+    console.log(chalk_1.default.gray(`  ${appName}/system/layout.sft`));
+    console.log(chalk_1.default.gray(`  ${appName}/auth/${options.auth}.sft`));
+});
+program
+    .command("deploy")
+    .option("--target <target>", "Destino do deploy", "s4ft.fun")
+    .action((options) => {
+    // Lógica para build e deploy usando as configs do s4ft.config.ts
+    console.log(`Deploy para ${options.target} iniciado!`);
+});
 async function createProject(projectName) {
     const projectPath = path_1.default.join(process.cwd(), projectName);
     // Create project structure

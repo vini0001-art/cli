@@ -1,9 +1,43 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DevServer = void 0;
+exports.getServerSideProps = getServerSideProps;
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const ws_1 = __importDefault(require("ws"));
@@ -12,11 +46,22 @@ const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const parser_js_1 = require("../parser/parser.js");
 const transpiler_js_1 = require("../transpiler/transpiler.js");
+const server_1 = require("react-dom/server");
+const middleware_js_1 = __importDefault(require("../middleware.js")); // ajuste: inclua a extensão se estiver usando ES Modules
+// import authMiddleware from "../../authMiddleware";
+const cors_1 = __importDefault(require("cors"));
+// import config from "../s4ft.config";
+let config = {};
 class DevServer {
     constructor(options) {
         this.options = options;
         this.app = (0, express_1.default)();
+        this.app.use(middleware_js_1.default);
+        this.app.use((0, cors_1.default)());
+        // this.app.use(authMiddleware);
         this.transpiler = new transpiler_js_1.Transpiler();
+        // Carregue o config dinamicamente se existir
+        this.loadConfig();
         this.setupMiddleware();
         this.setupBundleRoute();
         this.setupRoutes();
@@ -24,6 +69,30 @@ class DevServer {
         this.wss = new ws_1.default.WebSocketServer({ server: this.server });
         this.setupWebSocket();
         this.setupFileWatcher();
+        this.setupPlugins();
+    }
+    async loadConfig() {
+        // Suporte para s4ft.config.ts (ESM)
+        const configPathTs = path_1.default.join(this.options.projectRoot, "src", "s4ft.config.ts");
+        const configPathRootTs = path_1.default.join(this.options.projectRoot, "s4ft.config.ts");
+        let configModule;
+        try {
+            if (await fs_extra_1.default.pathExists(configPathTs)) {
+                configModule = await Promise.resolve(`${configPathTs + "?ts"}`).then(s => __importStar(require(s)));
+            }
+            else if (await fs_extra_1.default.pathExists(configPathRootTs)) {
+                configModule = await Promise.resolve(`${configPathRootTs + "?ts"}`).then(s => __importStar(require(s)));
+            }
+            if (configModule && configModule.default) {
+                config = configModule.default;
+            }
+            else if (configModule) {
+                config = configModule;
+            }
+        }
+        catch (e) {
+            config = {};
+        }
     }
     setupMiddleware() {
         this.app.use(express_1.default.static(path_1.default.join(this.options.projectRoot, "public")));
@@ -41,12 +110,13 @@ class DevServer {
         });
     }
     setupRoutes() {
-        this.app.get("/", (req, res) => {
-            const htmlContent = this.generateIndexHTML();
-            res.send(htmlContent);
-        });
+        // Remova ou comente as linhas abaixo:
+        // this.app.get("/", (req, res) => {
+        //   const htmlContent = this.generateIndexHTML()
+        //   res.send(htmlContent)
+        // })
         this.app.get("/api/:endpoint", this.handleAPIRoutes.bind(this));
-        this.app.use(this.handlePageRoutes.bind(this)); // <- Corrigido aqui
+        this.app.use(this.handlePageRoutes.bind(this)); // SSR para todas as rotas, inclusive "/"
     }
     generateIndexHTML() {
         return `
@@ -140,19 +210,85 @@ class DevServer {
             res.status(404).json({ error: "API route not found" });
         }
     }
+    // Adicione este método na classe DevServer:
+    async matchDynamicRoute(reqPath) {
+        const appFiles = await this.finds4ftFiles(this.options.appDir);
+        for (const file of appFiles) {
+            const relPath = path_1.default.relative(this.options.appDir, file).replace(/\\/g, "/");
+            // Exemplo: posts/[id].sft vira /posts/:id
+            const routePattern = relPath
+                .replace(/\.sft$/, "")
+                .replace(/\[([^\]]+)\]/g, ":$1");
+            // Cria regex para comparar a rota
+            const regexPattern = "^/" + routePattern.replace(/:[^/]+/g, "([^/]+)") + "$";
+            const regex = new RegExp(regexPattern);
+            const match = reqPath.match(regex);
+            if (match) {
+                // Extrai os nomes dos parâmetros
+                const paramNames = [...relPath.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]);
+                const paramValues = match.slice(1);
+                const params = {};
+                paramNames.forEach((name, i) => params[name] = paramValues[i]);
+                return { file, params };
+            }
+        }
+        return null;
+    }
+    // Modifique o método handlePageRoutes para usar a busca dinâmica:
     async handlePageRoutes(req, res) {
         let pagePath = req.path === "/" ? "/page" : req.path;
         if (pagePath.endsWith("/")) {
             pagePath += "page";
         }
         const pageFile = path_1.default.join(this.options.appDir, `${pagePath}.sft`);
-        if (await fs_extra_1.default.pathExists(pageFile)) {
-            const htmlContent = this.generateIndexHTML();
-            res.send(htmlContent);
+        let sftFile = pageFile;
+        let params = {};
+        if (!(await fs_extra_1.default.pathExists(pageFile))) {
+            // Tenta encontrar rota dinâmica
+            const dynamicMatch = await this.matchDynamicRoute(req.path);
+            if (dynamicMatch) {
+                sftFile = dynamicMatch.file;
+                params = dynamicMatch.params;
+            }
+            else {
+                res.status(404).send("Page not found");
+                return;
+            }
         }
-        else {
-            res.status(404).send("Page not found");
+        // Transpile o .sft para React
+        const content = await fs_extra_1.default.readFile(sftFile, "utf-8");
+        const parser = new parser_js_1.Parser(content);
+        const ast = parser.parse();
+        const jsCode = this.transpiler.transpile(ast);
+        // Crie o componente React dinamicamente
+        // (Aqui é um exemplo simplificado, idealmente use require-from-string ou transpile para um módulo)
+        // Supondo que jsCode exporta um componente chamado PageComponent
+        let PageComponent;
+        try {
+            // eslint-disable-next-line no-eval
+            PageComponent = eval(`(function(require, module, exports){${jsCode}; return module.exports.PageComponent || module.exports.default;})`)(require, { exports: {} }, {});
         }
+        catch (e) {
+            res.status(500).send("Erro ao compilar componente: " + e);
+            return;
+        }
+        // Renderize para HTML usando SSR
+        let html = "";
+        try {
+            html = (0, server_1.renderToString)(PageComponent ? PageComponent(params) : null);
+        }
+        catch (e) {
+            res.status(500).send("Erro ao renderizar componente: " + e);
+            return;
+        }
+        // Envie o HTML renderizado
+        res.end(`
+      <html>
+        <body>
+          <div id="root">${html}</div>
+        </body>
+      </html>
+    `);
     }
     setupWebSocket() {
         this.wss.on("connection", (ws) => {
@@ -204,13 +340,13 @@ class DevServer {
                 console.error(`Error transpiling ${file}:`, error);
             }
         }
-        bundleCode += `
-// Initialize the app
-const App = () => {
-  return React.createElement('div', null, 's4ft App Running!');
-};
-ReactDOM.render(React.createElement(App), document.getElementById('root'));
-    `;
+        // Remova ou comente este bloco:
+        // bundleCode += `
+        // const App = () => {
+        //   return React.createElement('div', null, 's4ft App Running!');
+        // };
+        // ReactDOM.render(React.createElement(App), document.getElementById('root'));
+        // `
         return bundleCode;
     }
     async finds4ftFiles(dir) {
@@ -229,6 +365,31 @@ ReactDOM.render(React.createElement(App), document.getElementById('root'));
             }
         }
         return files;
+    }
+    setupPlugins() {
+        // Adicione as declarações dos hooks aqui
+        const buildHooks = [];
+        const renderHooks = [];
+        const hooks = {
+            onRoute: (route, handler) => this.app.use(route, handler),
+            onBuild: (fn) => buildHooks.push(fn),
+            onRender: (fn) => renderHooks.push(fn),
+            // ...outros hooks
+        };
+        if (Array.isArray(config.plugins)) {
+            for (const plugin of config.plugins) {
+                let mod = plugin;
+                if (typeof plugin === "string") {
+                    mod = require(plugin); // carrega do node_modules
+                }
+                if (mod && typeof mod.setup === "function") {
+                    mod.setup(hooks);
+                }
+                else if (typeof mod === "function") {
+                    mod(hooks);
+                }
+            }
+        }
     }
     start() {
         return new Promise((resolve) => {
@@ -252,5 +413,9 @@ if (require.main === module) {
         port: 3000
     });
     server.start();
+}
+// No .sft
+async function getServerSideProps(context) {
+    return { props: {} };
 }
 //# sourceMappingURL=dev-server.js.map
