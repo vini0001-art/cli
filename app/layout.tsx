@@ -1,9 +1,9 @@
-import type { Metadata } from 'next'
 import './globals.css'
-import { path, fs } from 'fs'
+import fs from 'fs-extra'
+import path from 'path'
 import { renderToString } from 'react-dom/server'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'v0 App',
   description: 'Created with v0',
   generator: 'v0.dev',
@@ -16,17 +16,21 @@ export default async function RootLayout({
 }>) {
   // Pseudocódigo para compor layouts
   let layouts: any[] = [];
+  // Defina sftFile como o arquivo atual
+  const sftFile = __filename;
   let dir = path.dirname(sftFile);
   while (dir !== this.options.appDir) {
     const layoutFile = path.join(dir, "layout.sft");
     if (await fs.pathExists(layoutFile)) {
-      // transpile e importe o layout, adicione ao array
+      // Transpila e importa dinamicamente o layout, adicionando ao array
+      const importedModule = await import(layoutFile);
+      const importedLayout = importedModule.default || importedModule.Layout;
       layouts.unshift(importedLayout);
     }
     dir = path.dirname(dir);
   }
   // Renderize layouts aninhando o componente da página
-  let content = <PageComponent {...params} />;
+  let content = children;
   for (const Layout of layouts) {
     content = <Layout>{content}</Layout>;
   }
@@ -38,3 +42,4 @@ export default async function RootLayout({
     </html>
   )
 }
+

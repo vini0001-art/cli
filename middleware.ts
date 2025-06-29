@@ -7,7 +7,3 @@ export default function middleware(req: Request, res: Response, next: NextFuncti
   // Você pode adicionar autenticação, headers, etc.
   next();
 }
-
-// No início do dev-server
-import middleware from "../middleware";
-this.app.use(middleware);

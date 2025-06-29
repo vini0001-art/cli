@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
-import meuPlugin from "./meuPlugin";
-import customAnalyticsPlugin from "./plugins/customAnalyticsPlugin";
+// import meuPlugin from "./meuPlugin";
+// import customAnalyticsPlugin from "./plugins/customAnalyticsPlugin"; // Removido pois o módulo não existe
 
 const config = {
   // Configurações básicas
@@ -38,10 +38,10 @@ const config = {
 
   // Plug-ins customizados (exemplo)
   plugins: [
-    meuPlugin,
+    // meuPlugin,
     "s4ft-plugin-auth-github", // instalado via npm
     "s4ft-plugin-drive",
-    customAnalyticsPlugin({ token: "abc123" }) // plugin local com config
+    // customAnalyticsPlugin({ token: "abc123" }) // Removido pois o módulo não existe
     // Exemplo de plug-in customizado:
     // (plugin) => plugin({ config, app, server })
     // function meuPlugin({ config, app, server }) {

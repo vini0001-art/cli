@@ -7,10 +7,12 @@ import fs from "fs-extra"
 import { Parser } from "../parser/parser.js"
 import { Transpiler } from "../transpiler/transpiler.js"
 import { renderToString } from "react-dom/server";
-import middleware from "../../middleware"; // ajuste o caminho se necessário
-import authMiddleware from "../../authMiddleware";
-import corsMiddleware from "../../corsMiddleware";
-import config from "../s4ft.config";
+import middleware from "../middleware.js"; // ajuste: inclua a extensão se estiver usando ES Modules
+// import authMiddleware from "../../authMiddleware";
+import cors from "cors";
+// import config from "../s4ft.config";
+let config: any = {};
+// Substitua o bloco try/catch por um carregamento dinâmico no construtor
 
 export interface DevServerOptions {
   port: number
@@ -28,10 +30,13 @@ export class DevServer {
   constructor(options: DevServerOptions) {
     this.options = options
     this.app = express()
-    this.app.use(middleware) // <-- aqui você ativa o middleware
-    this.app.use(corsMiddleware);
-    this.app.use(authMiddleware);
+    this.app.use(middleware)
+    this.app.use(cors());
+    // this.app.use(authMiddleware);
     this.transpiler = new Transpiler()
+
+    // Carregue o config dinamicamente se existir
+    this.loadConfig();
 
     this.setupMiddleware()
     this.setupBundleRoute()
@@ -41,6 +46,27 @@ export class DevServer {
     this.setupWebSocket()
     this.setupFileWatcher()
     this.setupPlugins();
+  }
+
+  private async loadConfig() {
+    // Suporte para s4ft.config.ts (ESM)
+    const configPathTs = path.join(this.options.projectRoot, "src", "s4ft.config.ts");
+    const configPathRootTs = path.join(this.options.projectRoot, "s4ft.config.ts");
+    let configModule;
+    try {
+      if (await fs.pathExists(configPathTs)) {
+        configModule = await import(configPathTs + "?ts");
+      } else if (await fs.pathExists(configPathRootTs)) {
+        configModule = await import(configPathRootTs + "?ts");
+      }
+      if (configModule && configModule.default) {
+        config = configModule.default;
+      } else if (configModule) {
+        config = configModule;
+      }
+    } catch (e) {
+      config = {};
+    }
   }
 
   private setupMiddleware(): void {
@@ -328,10 +354,13 @@ ReactDOM.render(React.createElement(App), document.getElementById('root'));
   }
 
   private setupPlugins(): void {
+    // Adicione as declarações dos hooks aqui
+    const buildHooks: any[] = [];
+    const renderHooks: any[] = [];
     const hooks = {
-      onRoute: (route, handler) => this.app.use(route, handler),
-      onBuild: (fn) => buildHooks.push(fn),
-      onRender: (fn) => renderHooks.push(fn),
+      onRoute: (route: string, handler: express.RequestHandler) => this.app.use(route, handler),
+      onBuild: (fn: any) => buildHooks.push(fn),
+      onRender: (fn: any) => renderHooks.push(fn),
       // ...outros hooks
     };
 
@@ -374,6 +403,6 @@ if (require.main === module) {
 }
 
 // No .sft
-export async function getServerSideProps(context) {
-  return { props: { ... } }
+export async function getServerSideProps(context: any) {
+  return { props: {} }
 }
