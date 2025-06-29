@@ -251,7 +251,7 @@ class DevServer {
                 params = dynamicMatch.params;
             }
             else {
-                res.status(404).send("Page not found");
+                res.send(this.generateIndexHTML());
                 return;
             }
         }
@@ -376,18 +376,16 @@ class DevServer {
             onRender: (fn) => renderHooks.push(fn),
             // ...outros hooks
         };
-        if (Array.isArray(config.plugins)) {
-            for (const plugin of config.plugins) {
-                let mod = plugin;
-                if (typeof plugin === "string") {
-                    mod = require(plugin); // carrega do node_modules
-                }
-                if (mod && typeof mod.setup === "function") {
-                    mod.setup(hooks);
-                }
-                else if (typeof mod === "function") {
-                    mod(hooks);
-                }
+        for (const plugin of config.plugins) {
+            let mod = plugin;
+            if (typeof plugin === "string") {
+                mod = require(plugin); // carrega do node_modules
+            }
+            if (mod && typeof mod.setup === "function") {
+                mod.setup(hooks);
+            }
+            else if (typeof mod === "function") {
+                mod(hooks);
             }
         }
     }
