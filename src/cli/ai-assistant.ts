@@ -1,38 +1,116 @@
-```ts file="src/cli/deploy.ts"
-[v0-no-op-code-block-prefix]
+"use client"
 
-``\`ts file="src/cli/cli.ts"
-[v0-no-op-code-block-prefix]import { interactiveCreate } from '../commands/create'
-import { showNextSteps } from '../utils/helpers'
-import { Command } from 'commander'
-import { version } from '../../package.json'
+import chalk from "chalk"
+import inquirer from "inquirer"
 
-const program = new Command()
+export async function askAI(question: string) {
+  console.log(chalk.blue("🤖 S4FT AI Assistant\n"))
 
-program
-  .name('create-llama')
-  .description('Create LlamaIndex projects with the CLI')
-  .version(version)
-  .argument('[project-directory]', 'The name of the application', '.')
-  .option(
-    '-t, --template [name]',
-    'Use a LlamaIndex template. Official templates: [nextjs-ts, streamlit, flask]. Custom templates: [gh:owner/repo]'
-  )
-  .option(
-    '-pm, --package-manager <npm|yarn|pnpm>',
-    'Use a specific package manager. Defaults to npm.'
-  )
-  .option(
-    '-d, --no-install',
-    'Skip installing dependencies. Useful for quick scaffolding.'
-  )
-  .option(
-    '-git, --no-git',
-    'Skip initializing a git repository. Useful for quick scaffolding.'
-  )
-  .action(async (projectName, options) => {
-    const config = await interactiveCreate(projectName)
-    showNextSteps(config)
-  })
+  // Simular resposta da IA (em produção, integraria com Grok)
+  const responses: Record<string, string> = {
+    "como criar um componente": `
+Para criar um componente S4FT, use a sintaxe:
 
-program.parse()
+${chalk.green(`component MeuComponente {
+  state {
+    // Estado do componente
+    texto: string = "Olá"
+  }
+  
+  event handleClick() {
+    // Lógica do evento
+    texto = "Clicado!"
+  }
+  
+  <div className="meu-componente">
+    <h2>{texto}</h2>
+    <button onClick={handleClick}>Clique</button>
+  </div>
+}`)}
+
+Ou use o comando: ${chalk.cyan("s4ft generate component MeuComponente")}
+    `,
+    "como fazer deploy": `
+Para fazer deploy do seu projeto S4FT:
+
+1. ${chalk.cyan("s4ft build")} - Fazer build do projeto
+2. ${chalk.cyan("s4ft deploy")} - Deploy para S4FT Cloud
+3. ${chalk.cyan("s4ft deploy --platform vercel")} - Deploy para Vercel
+4. ${chalk.cyan("s4ft deploy --platform netlify")} - Deploy para Netlify
+
+O S4FT suporta deploy automático para múltiplas plataformas!
+    `,
+    "como usar state": `
+O sistema de state do S4FT é reativo:
+
+${chalk.green(`component Contador {
+  state {
+    count: number = 0,
+    nome: string = "Usuário"
+  }
+  
+  event incrementar() {
+    count = count + 1  // Atualização reativa
+  }
+  
+  <div>
+    <p>Olá {nome}, contador: {count}</p>
+    <button onClick={incrementar}>+1</button>
+  </div>
+}`)}
+
+O state é automaticamente reativo - quando muda, a UI atualiza!
+    `,
+  }
+
+  const lowerQuestion = question.toLowerCase()
+  let response = responses[lowerQuestion]
+
+  if (!response) {
+    // Buscar resposta mais próxima
+    const keys = Object.keys(responses)
+    const match = keys.find((key) => lowerQuestion.includes(key) || key.includes(lowerQuestion))
+    response = match ? responses[match] : null
+  }
+
+  if (response) {
+    console.log(chalk.white(response))
+  } else {
+    console.log(
+      chalk.yellow(`
+🤔 Não encontrei uma resposta específica para "${question}".
+
+Aqui estão algumas perguntas comuns:
+• "como criar um componente"
+• "como fazer deploy" 
+• "como usar state"
+
+Ou consulte a documentação: ${chalk.cyan("https://s4ft.fun/docs")}
+    `),
+    )
+  }
+
+  // Perguntar se quer fazer outra pergunta
+  const { continuar } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "continuar",
+      message: "Quer fazer outra pergunta?",
+      default: false,
+    },
+  ])
+
+  if (continuar) {
+    const { novaPergunta } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "novaPergunta",
+        message: "❓ Sua pergunta:",
+      },
+    ])
+
+    if (novaPergunta.trim()) {
+      await askAI(novaPergunta)
+    }
+  }
+}
