@@ -1,44 +1,33 @@
-import './globals.css'
-import fs from 'fs-extra'
-import path from 'path'
-import { renderToString } from 'react-dom/server'
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
 
-export const metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+const inter = Inter({ subsets: ["latin"] })
+
+export const metadata: Metadata = {
+  title: "S4FT Framework - Simple And Fast Templates",
+  description:
+    "O futuro do desenvolvimento web brasileiro. Framework moderno com Islands Architecture, IA integrada e deploy automático.",
+  keywords: ["framework", "javascript", "typescript", "react", "nextjs", "brasileiro"],
+  authors: [{ name: "Marcos Dresbach" }],
+  openGraph: {
+    title: "S4FT Framework",
+    description: "O futuro do desenvolvimento web brasileiro",
+    type: "website",
+    locale: "pt_BR",
+  },
+    generator: 'v0.dev'
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
-  // Pseudocódigo para compor layouts
-  let layouts: any[] = [];
-  // Defina sftFile como o arquivo atual
-  const sftFile = __filename;
-  let dir = path.dirname(sftFile);
-  while (dir !== this.options.appDir) {
-    const layoutFile = path.join(dir, "layout.sft");
-    if (await fs.pathExists(layoutFile)) {
-      // Transpila e importa dinamicamente o layout, adicionando ao array
-      const importedModule = await import(layoutFile);
-      const importedLayout = importedModule.default || importedModule.Layout;
-      layouts.unshift(importedLayout);
-    }
-    dir = path.dirname(dir);
-  }
-  // Renderize layouts aninhando o componente da página
-  let content = children;
-  for (const Layout of layouts) {
-    content = <Layout>{content}</Layout>;
-  }
-  const html = renderToString(content);
-
+}) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="pt-BR">
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }

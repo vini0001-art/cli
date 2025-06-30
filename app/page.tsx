@@ -1,129 +1,142 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Star, Users } from "lucide-react"
 
-export default function SimplePage() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">P</span>
-            </div>
-            <span className="font-semibold text-lg">Projeto</span>
-          </div>
-          <nav className="hidden md:flex items-center space-x-6">
-            <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Início
-            </a>
-            <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Sobre
-            </a>
-            <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Contato
-            </a>
-          </nav>
-          <Button>Começar</Button>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
-        {/* Hero Section */}
-        <section className="text-center mb-16">
-          <Badge variant="secondary" className="mb-4">
-            ✨ Novo projeto
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Uma página
-            <span className="text-blue-600"> simples</span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Esta é uma página simples e moderna, criada com Next.js e componentes elegantes. Perfeita para começar seu
-            próximo projeto.
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-bold text-gray-900 mb-4">S4FT Framework</h1>
+          <p className="text-xl text-gray-600 mb-6">
+            Simple And Fast Templates - O futuro do desenvolvimento web brasileiro
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8">
-              Explorar agora
-            </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
-              Saiba mais
-            </Button>
-          </div>
-        </section>
+          <Badge variant="secondary" className="mb-8">
+            v1.0.1 - Pronto para produção
+          </Badge>
+        </div>
 
         {/* Features Grid */}
-        <section className="grid md:grid-cols-3 gap-6 mb-16">
-          <Card className="text-center hover:shadow-lg transition-shadow">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <Card>
             <CardHeader>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Star className="w-6 h-6 text-blue-600" />
-              </div>
-              <CardTitle>Qualidade</CardTitle>
-              <CardDescription>Código limpo e bem estruturado para facilitar manutenção</CardDescription>
+              <CardTitle className="text-lg">🚀 Performance</CardTitle>
+              <CardDescription>Islands Architecture com hidratação seletiva</CardDescription>
             </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">Zero JavaScript por padrão, carrega apenas o necessário</p>
+            </CardContent>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
+          <Card>
             <CardHeader>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Users className="w-6 h-6 text-green-600" />
-              </div>
-              <CardTitle>Comunidade</CardTitle>
-              <CardDescription>Feito com tecnologias populares e bem documentadas</CardDescription>
+              <CardTitle className="text-lg">🧠 IA Integrada</CardTitle>
+              <CardDescription>Assistant powered by Grok</CardDescription>
             </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">Ajuda contextual e geração de código inteligente</p>
+            </CardContent>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
+          <Card>
             <CardHeader>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-6 h-6 text-red-600" />
-              </div>
-              <CardTitle>Simplicidade</CardTitle>
-              <CardDescription>Interface intuitiva e fácil de usar para todos</CardDescription>
+              <CardTitle className="text-lg">🌐 Deploy Automático</CardTitle>
+              <CardDescription>Múltiplas plataformas suportadas</CardDescription>
             </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">Vercel, Netlify, S4FT Cloud e GitHub Pages</p>
+            </CardContent>
           </Card>
-        </section>
 
-        {/* CTA Section */}
-        <section className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-sm">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">📝 Sintaxe Intuitiva</CardTitle>
+              <CardDescription>Linguagem declarativa simples</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">Inspirada no Next.js mas mais simples e poderosa</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">🔌 Plugins</CardTitle>
+              <CardDescription>Ecossistema extensível</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">PWA, Auth, Analytics e muito mais</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">🇧🇷 Brasileiro</CardTitle>
+              <CardDescription>Feito no Brasil para o mundo</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">CLI em português e documentação nacional</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Code Example */}
+        <Card className="mb-12">
+          <CardHeader>
+            <CardTitle>Exemplo de Código S4FT</CardTitle>
+            <CardDescription>Veja como é simples criar componentes</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto">
+              {`component TodoList {
+  state {
+    todos: array = [],
+    newTodo: string = ""
+  }
+  
+  event addTodo() {
+    todos.push({ id: Date.now(), text: newTodo })
+    newTodo = ""
+  }
+  
+  <div className="todo-list">
+    <input 
+      value={newTodo} 
+      onChange={(e) => newTodo = e.target.value}
+      placeholder="Nova tarefa..."
+    />
+    <button onClick={addTodo}>Adicionar</button>
+    
+    {todos.map(todo => (
+      <div key={todo.id}>{todo.text}</div>
+    ))}
+  </div>
+}`}
+            </pre>
+          </CardContent>
+        </Card>
+
+        {/* CTA */}
+        <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Pronto para começar?</h2>
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            Esta página simples pode ser o ponto de partida para algo incrível.
-          </p>
-          <Button size="lg" className="text-lg px-8">
-            Vamos começar
-          </Button>
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t bg-white/80 backdrop-blur-sm mt-16">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
-                <span className="text-white font-bold text-xs">P</span>
-              </div>
-              <span className="text-gray-600">© 2024 Projeto. Todos os direitos reservados.</span>
-            </div>
-            <div className="flex space-x-6">
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Privacidade
-              </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Termos
-              </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Suporte
-              </a>
-            </div>
+          <p className="text-gray-600 mb-8">Instale o S4FT e crie seu primeiro projeto em segundos</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              npm install -g s4ft-framework
+            </Button>
+            <Button variant="outline" size="lg">
+              Ver Documentação
+            </Button>
           </div>
         </div>
-      </footer>
+
+        {/* Footer */}
+        <footer className="mt-16 pt-8 border-t border-gray-200 text-center text-gray-500">
+          <p>© 2024 S4FT Framework - Feito com ❤️ no Brasil 🇧🇷</p>
+        </footer>
+      </div>
     </div>
   )
 }

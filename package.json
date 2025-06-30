@@ -1,48 +1,13 @@
 {
-  "name": "s4ft-framework",
+  "name": "s4ft-framework-demo",
   "version": "1.0.1",
-  "private": false,
-  "description": "**s4ft** (Simple And Fast Templates) is a declarative web development language and framework inspired by Next.js. It provides an intuitive syntax for building modern web applications with built-in routing, state management, and component architecture.",
-  "keywords": [
-    "framework",
-    "s4ft",
-    "javascript",
-    "typescript",
-    "frontend",
-    "fullstack",
-    "web-framework",
-    "react",
-    "nextjs-alternative",
-    "brazilian-framework"
-  ],
-  "homepage": "https://s4ft.fun",
-  "bugs": {
-    "url": "https://github.com/s4ft-framework/s4ft/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/s4ft-framework/s4ft.git"
-  },
-  "license": "MIT",
-  "author": "Marcos Dresbach",
-  "main": "./dist/index.js",
-  "bin": {
-    "s4ft": "./dist/bin/s4ft.js"
-  },
-  "directories": {
-    "lib": "lib",
-    "example": "examples"
-  },
+  "private": true,
+  "description": "S4FT Framework - Simple And Fast Templates",
   "scripts": {
     "build": "next build",
-    "build-framework": "tsc",
-    "cli": "node dist/bin/s4ft.js",
     "dev": "next dev",
-    "format": "prettier --write src/**/*.ts",
-    "postinstall": "node ./bin/postinstall.js",
     "lint": "next lint",
-    "start": "next start",
-    "test": "jest"
+    "start": "next start"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "latest",
@@ -72,7 +37,8 @@
     "@radix-ui/react-toggle": "latest",
     "@radix-ui/react-toggle-group": "latest",
     "@radix-ui/react-tooltip": "latest",
-    "bufferutil": "^4.0.8",
+    "@types/react-dom": "latest",
+    "bufferutil": "latest",
     "chalk": "latest",
     "chokidar": "latest",
     "class-variance-authority": "^0.7.1",
@@ -101,24 +67,16 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "terser": "latest",
-    "utf-8-validate": "^6.0.3",
+    "utf-8-validate": "latest",
     "vaul": "latest",
     "ws": "latest"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^4.17.21",
-    "@types/fs-extra": "^11.0.4",
-    "@types/inquirer": "^8.2.10",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@types/ws": "^8.5.10",
     "autoprefixer": "^10.4.21",
-    "eslint": "^8.57.0",
-    "jest": "^29.7.0",
     "postcss": "^8.5",
-    "prettier": "^3.1.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   },
