@@ -67,14 +67,15 @@ export async function interactiveCreate(projectName?: string): Promise<ProjectCo
         { name: "💳 Pagamentos", value: "payments" },
       ],
     },
-  ]
+  ] as const
 
-  // Perguntas condicionais
-  const answers = await inquirer.prompt(questions)
+  // ---------- respostas principais ----------
+  type BaseAnswers = Pick<ProjectConfig, "name" | "language" | "template" | "features">
+  const baseAns = await inquirer.prompt<BaseAnswers & { auth?: string; database?: string }>(questions)
 
-  // Se escolheu auth, perguntar provider
-  if (answers.features.includes("auth")) {
-    const authQuestion = await inquirer.prompt([
+  // ---------- condicionais ----------
+  if (baseAns.features.includes("auth")) {
+    const { auth } = await inquirer.prompt<{ auth: string }>([
       {
         type: "list",
         name: "auth",
@@ -87,12 +88,11 @@ export async function interactiveCreate(projectName?: string): Promise<ProjectCo
         ],
       },
     ])
-    answers.auth = authQuestion.auth
+    baseAns.auth = auth
   }
 
-  // Se escolheu database, perguntar qual
-  if (answers.features.includes("database")) {
-    const dbQuestion = await inquirer.prompt([
+  if (baseAns.features.includes("database")) {
+    const { database } = await inquirer.prompt<{ database: string }>([
       {
         type: "list",
         name: "database",
@@ -105,11 +105,12 @@ export async function interactiveCreate(projectName?: string): Promise<ProjectCo
         ],
       },
     ])
-    answers.database = dbQuestion.database
+    baseAns.database = database
   }
 
-  // Gerenciador de pacotes
-  const pmQuestion = await inquirer.prompt([
+  const { packageManager } = await inquirer.prompt<{
+    packageManager: ProjectConfig["packageManager"]
+  }>([
     {
       type: "list",
       name: "packageManager",
@@ -122,11 +123,13 @@ export async function interactiveCreate(projectName?: string): Promise<ProjectCo
     },
   ])
 
-  return {
-    ...answers,
-    packageManager: pmQuestion.packageManager,
-    styling: answers.features.includes("tailwind") ? "tailwind" : "css",
+  // ---------- retorno tipado ----------
+  const config: ProjectConfig = {
+    ...baseAns,
+    packageManager,
+    styling: baseAns.features.includes("tailwind") ? "tailwind" : "css",
   }
+  return config
 }
 
 export function showNextSteps(config: ProjectConfig) {
