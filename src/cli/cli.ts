@@ -8,7 +8,8 @@ import path from "path"
 import { DevServer } from "../dev-server/dev-server.js"
 import { Builder } from "../build/builder.js"
 import { Transpiler } from "../transpiler/transpiler.js"
-import { interactiveCreate, showNextSteps } from './interactive-cli.js'
+import { interactiveCreate, showNextSteps } from "./interactive-cli.js"
+import type { ProjectConfig } from "./interactive-cli.js"
 
 const program = new Command()
 
@@ -21,26 +22,27 @@ program
   .option("--no-interactive", "Skip interactive prompts")
   .action(async (projectName: string, options) => {
     try {
-      let config
-      
+      let config: ProjectConfig
+
       if (options.interactive !== false) {
         config = await interactiveCreate(projectName)
       } else {
         config = {
-          name: projectName || 'my-s4ft-app',
-          language: 'en',
-          template: options.template || 'basic',
+          name: projectName || "my-s4ft-app",
+          language: "en",
+          template: options.template || "basic",
           features: [],
-          auth: null,
-          database: null,
-          styling: 'tailwind'
+          auth: undefined,
+          database: undefined,
+          styling: "tailwind",
+          packageManager: "npm",
         }
       }
 
       const spinner = ora("Creating s4ft project...").start()
       await createProject(config)
       spinner.succeed()
-      
+
       showNextSteps(config)
     } catch (error) {
       console.error(chalk.red("❌ Failed to create project"))
@@ -113,8 +115,8 @@ program
   .option("-p, --port <port>", "Port to run on", "3000")
   .option("-d, --dir <dir>", "Build directory", "dist")
   .action(async (options) => {
-    const express = require("express");
-    const path = require("path");
+    const express = require("express")
+    const path = require("path")
 
     const app = express()
     const port = Number.parseInt(options.port)
@@ -144,7 +146,7 @@ program
   .option("--template <template>", "Use specific template")
   .action(async (type: string, name: string, options) => {
     const spinner = ora(`Generating ${type}: ${name}...`).start()
-    
+
     try {
       await generateFile(type, name, options)
       spinner.succeed(chalk.green(`✅ Generated ${type}: ${name}`))
@@ -160,11 +162,11 @@ program
   .option("--layout <layout>", "Escolha o layout", "system")
   .option("--auth <provider>", "Adicione autenticação", "github")
   .action(async (appName, options) => {
-    const projectPath = path.join(process.cwd(), appName);
+    const projectPath = path.join(process.cwd(), appName)
 
-    await fs.ensureDir(projectPath);
-    await fs.ensureDir(path.join(projectPath, "system"));
-    await fs.ensureDir(path.join(projectPath, "auth"));
+    await fs.ensureDir(projectPath)
+    await fs.ensureDir(path.join(projectPath, "system"))
+    await fs.ensureDir(path.join(projectPath, "auth"))
 
     const layoutFile = `// Layout principal gerado automaticamente
 layout SystemLayout {
@@ -178,8 +180,8 @@ layout SystemLayout {
   </div>
 }
 export SystemLayout;
-`;
-    await fs.writeFile(path.join(projectPath, "system", "layout.sft"), layoutFile);
+`
+    await fs.writeFile(path.join(projectPath, "system", "layout.sft"), layoutFile)
 
     const authFile = `// Provider de autenticação gerado automaticamente
 auth ${options.auth.charAt(0).toUpperCase() + options.auth.slice(1)}Auth {
@@ -187,36 +189,36 @@ auth ${options.auth.charAt(0).toUpperCase() + options.auth.slice(1)}Auth {
   // Exemplo: clientId, clientSecret, redirectUri, etc.
 }
 export ${options.auth.charAt(0).toUpperCase() + options.auth.slice(1)}Auth;
-`;
-    await fs.writeFile(path.join(projectPath, "auth", `${options.auth}.sft`), authFile);
+`
+    await fs.writeFile(path.join(projectPath, "auth", `${options.auth}.sft`), authFile)
 
-    console.log(`Novo projeto ${appName} com layout ${options.layout} e auth ${options.auth}`);
-    console.log(chalk.blue("Estrutura criada:"));
-    console.log(chalk.gray(`  ${appName}/system/layout.sft`));
-    console.log(chalk.gray(`  ${appName}/auth/${options.auth}.sft`));
-  });
+    console.log(`Novo projeto ${appName} com layout ${options.layout} e auth ${options.auth}`)
+    console.log(chalk.blue("Estrutura criada:"))
+    console.log(chalk.gray(`  ${appName}/system/layout.sft`))
+    console.log(chalk.gray(`  ${appName}/auth/${options.auth}.sft`))
+  })
 
 program
   .command("deploy")
   .option("--target <target>", "Destino do deploy", "s4ft.fun")
   .action((options) => {
-    console.log(`Deploy para ${options.target} iniciado!`);
-  });
+    console.log(`Deploy para ${options.target} iniciado!`)
+  })
 
 async function generateFile(type: string, name: string, options: any): Promise<void> {
   const projectRoot = process.cwd()
-  
+
   switch (type) {
-    case 'component':
+    case "component":
       await generateComponent(projectRoot, name, options)
       break
-    case 'page':
+    case "page":
       await generatePage(projectRoot, name, options)
       break
-    case 'api':
+    case "api":
       await generateAPI(projectRoot, name, options)
       break
-    case 'layout':
+    case "layout":
       await generateLayout(projectRoot, name, options)
       break
     default:
@@ -226,7 +228,7 @@ async function generateFile(type: string, name: string, options: any): Promise<v
 
 async function generateComponent(projectRoot: string, name: string, options: any): Promise<void> {
   const componentPath = path.join(projectRoot, "components", `${name}.sft`)
-  
+
   const template = `// ${name} component
 component ${name} {
   props {
@@ -256,7 +258,7 @@ export ${name};
 
 async function generatePage(projectRoot: string, name: string, options: any): Promise<void> {
   const pagePath = path.join(projectRoot, "app", `${name}`, "page.sft")
-  
+
   const template = `// ${name} page
 page ${name}Page {
   state {
@@ -278,7 +280,7 @@ export ${name}Page;
 
 async function generateAPI(projectRoot: string, name: string, options: any): Promise<void> {
   const apiPath = path.join(projectRoot, "app", "api", `${name}.sft`)
-  
+
   const template = `// ${name} API route
 export function GET(request) {
   return {
@@ -309,7 +311,7 @@ export function POST(request) {
 
 async function generateLayout(projectRoot: string, name: string, options: any): Promise<void> {
   const layoutPath = path.join(projectRoot, "app", `${name}`, "layout.sft")
-  
+
   const template = `// ${name} layout
 layout ${name}Layout {
   props {
@@ -338,7 +340,7 @@ export ${name}Layout;
 
 async function createProject(config: any): Promise<void> {
   const projectPath = path.join(process.cwd(), config.name)
-  
+
   // Create project structure
   await fs.ensureDir(projectPath)
   await fs.ensureDir(path.join(projectPath, "app"))
@@ -348,7 +350,7 @@ async function createProject(config: any): Promise<void> {
   await fs.ensureDir(path.join(projectPath, "public"))
   await fs.ensureDir(path.join(projectPath, "scripts"))
   await fs.ensureDir(path.join(projectPath, "docs"))
-  
+
   // Create package.json with selected features
   const packageJson = {
     name: config.name,
@@ -362,9 +364,9 @@ async function createProject(config: any): Promise<void> {
     },
     dependencies: {
       "s4ft-framework": "^1.0.0",
-      ...(config.styling === 'tailwind' && { "tailwindcss": "^3.0.0" }),
-      ...(config.features.includes('auth') && { [`s4ft-plugin-auth-${config.auth}`]: "^1.0.0" }),
-      ...(config.features.includes('database') && { [`s4ft-plugin-${config.database}`]: "^1.0.0" }),
+      ...(config.styling === "tailwind" && { tailwindcss: "^3.0.0" }),
+      ...(config.features.includes("auth") && { [`s4ft-plugin-auth-${config.auth}`]: "^1.0.0" }),
+      ...(config.features.includes("database") && { [`s4ft-plugin-${config.database}`]: "^1.0.0" }),
     },
   }
 
@@ -374,14 +376,14 @@ async function createProject(config: any): Promise<void> {
 }
 
 async function createExampleFiles(projectPath: string, config: any): Promise<void> {
-  const isPortuguese = config.language === 'pt-br'
-  
+  const isPortuguese = config.language === "pt-br"
+
   // Create main page
-  const mainPage = `// ${isPortuguese ? 'Componente da página principal' : 'Main page component'}
+  const mainPage = `// ${isPortuguese ? "Componente da página principal" : "Main page component"}
 page HomePage {
   state {
     count: number = 0,
-    message: string = "${isPortuguese ? 'Bem-vindo ao s4ft!' : 'Welcome to s4ft!'}"
+    message: string = "${isPortuguese ? "Bem-vindo ao s4ft!" : "Welcome to s4ft!"}"
   }
   
   event handleClick() {
@@ -390,9 +392,9 @@ page HomePage {
   
   <div className="container">
     <h1>{message}</h1>
-    <p>${isPortuguese ? 'Você clicou' : 'You clicked'} {count} ${isPortuguese ? 'vezes' : 'times'}</p>
+    <p>${isPortuguese ? "Você clicou" : "You clicked"} {count} ${isPortuguese ? "vezes" : "times"}</p>
     <button onClick={handleClick}>
-      ${isPortuguese ? 'Clique aqui!' : 'Click me!'}
+      ${isPortuguese ? "Clique aqui!" : "Click me!"}
     </button>
   </div>
 }
@@ -403,13 +405,13 @@ export HomePage;
   await fs.writeFile(path.join(projectPath, "app", "page.sft"), mainPage)
 
   // Create layout
-  const layout = `// ${isPortuguese ? 'Layout raiz do componente' : 'Root layout component'}
+  const layout = `// ${isPortuguese ? "Layout raiz do componente" : "Root layout component"}
 layout RootLayout {
   props {
     children: ReactNode
   }
   
-  <html lang="${isPortuguese ? 'pt-br' : 'en'}">
+  <html lang="${isPortuguese ? "pt-br" : "en"}">
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -429,10 +431,10 @@ export RootLayout;
   await fs.writeFile(path.join(projectPath, "app", "layout.sft"), layout)
 
   // Create example component
-  const component = `// ${isPortuguese ? 'Componente de botão reutilizável' : 'Reusable button component'}
+  const component = `// ${isPortuguese ? "Componente de botão reutilizável" : "Reusable button component"}
 component Button {
   props {
-    text: string = "${isPortuguese ? 'Clique aqui' : 'Click me'}",
+    text: string = "${isPortuguese ? "Clique aqui" : "Click me"}",
     variant: string = "primary",
     onClick: function
   }
@@ -457,12 +459,12 @@ export Button;
   await fs.writeFile(path.join(projectPath, "components", "Button.sft"), component)
 
   // Create API route example
-  const apiRoute = `// ${isPortuguese ? 'Exemplo de rota da API' : 'Example API route'}
+  const apiRoute = `// ${isPortuguese ? "Exemplo de rota da API" : "Example API route"}
 export function GET(request) {
   return {
     status: 200,
     body: {
-      message: "${isPortuguese ? 'Olá da API s4ft!' : 'Hello from s4ft API!'}",
+      message: "${isPortuguese ? "Olá da API s4ft!" : "Hello from s4ft API!"}",
       timestamp: new Date().toISOString()
     }
   };
@@ -474,7 +476,7 @@ export function POST(request) {
   return {
     status: 200,
     body: {
-      message: "${isPortuguese ? 'Dados recebidos' : 'Data received'}",
+      message: "${isPortuguese ? "Dados recebidos" : "Data received"}",
       data: body
     }
   };
@@ -484,7 +486,7 @@ export function POST(request) {
   await fs.writeFile(path.join(projectPath, "app", "api", "hello.sft"), apiRoute)
 
   // Create CSS file
-  const styles = `/* ${isPortuguese ? 'Estilos globais' : 'Global styles'} */
+  const styles = `/* ${isPortuguese ? "Estilos globais" : "Global styles"} */
 * {
   margin: 0;
   padding: 0;
@@ -556,30 +558,30 @@ p {
   // Create s4ft config
   const s4ftConfig = `// S4FT Configuration
 export default {
-  // ${isPortuguese ? 'Configurações do projeto' : 'Project settings'}
+  // ${isPortuguese ? "Configurações do projeto" : "Project settings"}
   name: "${config.name}",
   version: "1.0.0",
   
-  // ${isPortuguese ? 'Configurações de build' : 'Build settings'}
+  // ${isPortuguese ? "Configurações de build" : "Build settings"}
   build: {
     outDir: "dist",
     minify: true,
     sourceMaps: false,
   },
   
-  // ${isPortuguese ? 'Configurações do servidor de desenvolvimento' : 'Dev server settings'}
+  // ${isPortuguese ? "Configurações do servidor de desenvolvimento" : "Dev server settings"}
   dev: {
     port: 3000,
     host: "localhost",
     open: true,
   },
   
-  // ${isPortuguese ? 'Plugins' : 'Plugins'}
+  // ${isPortuguese ? "Plugins" : "Plugins"}
   plugins: [
-    ${config.features.map((feature: string) => `"s4ft-plugin-${feature}"`).join(',\n    ')}
+    ${config.features.map((feature: string) => `"s4ft-plugin-${feature}"`).join(",\n    ")}
   ],
   
-  // ${isPortuguese ? 'Configurações de deploy' : 'Deploy settings'}
+  // ${isPortuguese ? "Configurações de deploy" : "Deploy settings"}
   deploy: {
     target: "s4ft.fun",
     domain: "${config.name}.s4ft.fun"
@@ -591,49 +593,49 @@ export default {
 }
 
 async function createReadme(projectPath: string, projectName: string, language: string): Promise<void> {
-  const isPortuguese = language === 'pt-br'
-  
+  const isPortuguese = language === "pt-br"
+
   const readme = `# ${projectName}
 
-${isPortuguese ? 'Uma aplicação web s4ft (Simple And Fast Templates).' : 'A s4ft (Simple And Fast Templates) web application.'}
+${isPortuguese ? "Uma aplicação web s4ft (Simple And Fast Templates)." : "A s4ft (Simple And Fast Templates) web application."}
 
-## ${isPortuguese ? 'Começando' : 'Getting Started'}
+## ${isPortuguese ? "Começando" : "Getting Started"}
 
-${isPortuguese ? 'Primeiro, execute o servidor de desenvolvimento:' : 'First, run the development server:'}
+${isPortuguese ? "Primeiro, execute o servidor de desenvolvimento:" : "First, run the development server:"}
 
 \`\`\`bash
 npm run dev
-# ${isPortuguese ? 'ou' : 'or'}
+# ${isPortuguese ? "ou" : "or"}
 s4ft dev
 \`\`\`
 
-${isPortuguese ? 'Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado.' : 'Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.'}
+${isPortuguese ? "Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado." : "Open [http://localhost:3000](http://localhost:3000) with your browser to see the result."}
 
-## ${isPortuguese ? 'Estrutura do Projeto' : 'Project Structure'}
+## ${isPortuguese ? "Estrutura do Projeto" : "Project Structure"}
 
 \`\`\`
 ${projectName}/
-├── app/                 # ${isPortuguese ? 'Páginas e layouts do app router' : 'App router pages and layouts'}
-│   ├── api/            # ${isPortuguese ? 'Rotas da API' : 'API routes'}
-│   ├── layout.sft      # ${isPortuguese ? 'Layout raiz' : 'Root layout'}
-│   └── page.sft        # ${isPortuguese ? 'Página inicial' : 'Home page'}
-├── components/         # ${isPortuguese ? 'Componentes reutilizáveis' : 'Reusable components'}
-├── styles/            # ${isPortuguese ? 'Arquivos CSS' : 'CSS files'}
-├── public/            # ${isPortuguese ? 'Assets estáticos' : 'Static assets'}
-├── scripts/           # ${isPortuguese ? 'Scripts de build e utilitários' : 'Build and utility scripts'}
-└── docs/              # ${isPortuguese ? 'Documentação' : 'Documentation'}
+├── app/                 # ${isPortuguese ? "Páginas e layouts do app router" : "App router pages and layouts"}
+│   ├── api/            # ${isPortuguese ? "Rotas da API" : "API routes"}
+│   ├── layout.sft      # ${isPortuguese ? "Layout raiz" : "Root layout"}
+│   └── page.sft        # ${isPortuguese ? "Página inicial" : "Home page"}
+├── components/         # ${isPortuguese ? "Componentes reutilizáveis" : "Reusable components"}
+├── styles/            # ${isPortuguese ? "Arquivos CSS" : "CSS files"}
+├── public/            # ${isPortuguese ? "Assets estáticos" : "Static assets"}
+├── scripts/           # ${isPortuguese ? "Scripts de build e utilitários" : "Build and utility scripts"}
+└── docs/              # ${isPortuguese ? "Documentação" : "Documentation"}
 \`\`\`
 
-## ${isPortuguese ? 'Sintaxe s4ft' : 's4ft Syntax'}
+## ${isPortuguese ? "Sintaxe s4ft" : "s4ft Syntax"}
 
-${isPortuguese ? 'O s4ft usa uma sintaxe declarativa similar ao React, mas com algumas funcionalidades únicas:' : 's4ft uses a declarative syntax similar to React but with some unique features:'}
+${isPortuguese ? "O s4ft usa uma sintaxe declarativa similar ao React, mas com algumas funcionalidades únicas:" : "s4ft uses a declarative syntax similar to React but with some unique features:"}
 
-### ${isPortuguese ? 'Componentes' : 'Components'}
+### ${isPortuguese ? "Componentes" : "Components"}
 
 \`\`\`s4ft
 component MeuComponente {
   props {
-    titulo: string = "${isPortuguese ? 'Título Padrão' : 'Default Title'}",
+    titulo: string = "${isPortuguese ? "Título Padrão" : "Default Title"}",
     contador: number
   }
   
@@ -642,24 +644,24 @@ component MeuComponente {
   }
   
   event alternarVisibilidade() {
-    // ${isPortuguese ? 'Lógica do manipulador de evento' : 'Event handler logic'}
+    // ${isPortuguese ? "Lógica do manipulador de evento" : "Event handler logic"}
   }
   
   <div>
     <h1>{titulo}</h1>
-    {visivel && <p>${isPortuguese ? 'Contador' : 'Count'}: {contador}</p>}
-    <button onClick={alternarVisibilidade}>${isPortuguese ? 'Alternar' : 'Toggle'}</button>
+    {visivel && <p>${isPortuguese ? "Contador" : "Count"}: {contador}</p>}
+    <button onClick={alternarVisibilidade}>${isPortuguese ? "Alternar" : "Toggle"}</button>
   </div>
 }
 \`\`\`
 
-### ${isPortuguese ? 'Páginas' : 'Pages'}
+### ${isPortuguese ? "Páginas" : "Pages"}
 
 \`\`\`s4ft
 page PaginaSobre {
   <div>
-    <h1>${isPortuguese ? 'Sobre Nós' : 'About Us'}</h1>
-    <p>${isPortuguese ? 'Esta é a página sobre.' : 'This is the about page.'}</p>
+    <h1>${isPortuguese ? "Sobre Nós" : "About Us"}</h1>
+    <p>${isPortuguese ? "Esta é a página sobre." : "This is the about page."}</p>
   </div>
 }
 \`\`\`
@@ -674,39 +676,41 @@ layout LayoutPrincipal {
   
   <div className="layout">
     <header>
-      <nav>${isPortuguese ? 'Navegação' : 'Navigation'}</nav>
+      <nav>${isPortuguese ? "Navegação" : "Navigation"}</nav>
     </header>
     <main>
       {children}
     </main>
-    <footer>${isPortuguese ? 'Rodapé' : 'Footer'}</footer>
+    <footer>${isPortuguese ? "Rodapé" : "Footer"}</footer>
   </div>
 }
 \`\`\`
 
-## ${isPortuguese ? 'Comandos' : 'Commands'}
+## ${isPortuguese ? "Comandos" : "Commands"}
 
-- \`s4ft dev\` - ${isPortuguese ? 'Iniciar servidor de desenvolvimento' : 'Start development server'}
-- \`s4ft build\` - ${isPortuguese ? 'Build para produção' : 'Build for production'}
-- \`s4ft serve\` - ${isPortuguese ? 'Servir build de produção' : 'Serve production build'}
-- \`s4ft generate <tipo> <nome>\` - ${isPortuguese ? 'Gerar componentes, páginas ou APIs' : 'Generate components, pages or APIs'}
+- \`s4ft dev\` - ${isPortuguese ? "Iniciar servidor de desenvolvimento" : "Start development server"}
+- \`s4ft build\` - ${isPortuguese ? "Build para produção" : "Build for production"}
+- \`s4ft serve\` - ${isPortuguese ? "Servir build de produção" : "Serve production build"}
+- \`s4ft generate <tipo> <nome>\` - ${isPortuguese ? "Gerar componentes, páginas ou APIs" : "Generate components, pages or APIs"}
 
-## ${isPortuguese ? 'Saiba Mais' : 'Learn More'}
+## ${isPortuguese ? "Saiba Mais" : "Learn More"}
 
-${isPortuguese ? 'Para saber mais sobre o s4ft, confira a [documentação](./docs/).' : 'To learn more about s4ft, check out the [documentation](./docs/).'}
+${isPortuguese ? "Para saber mais sobre o s4ft, confira a [documentação](./docs/)." : "To learn more about s4ft, check out the [documentation](./docs/)."}
 
 ---
 
-🌟 ${isPortuguese ? 'Obrigado por usar o S4FT!' : 'Thank you for using S4FT!'} 🌟
+🌟 ${isPortuguese ? "Obrigado por usar o S4FT!" : "Thank you for using S4FT!"} 🌟
 
-${isPortuguese ? 'Ajude o projeto a crescer! Doe via PIX (doacao@s4ft.fun) ou Stripe:' : 'Help the project grow! Donate via PIX (doacao@s4ft.fun) or Stripe:'}
-- ${isPortuguese ? 'Brasileiros' : 'Brazilians'}: https://buy.stripe.com/4gM5kE16MfCb4b72C60sU00
-- ${isPortuguese ? 'Não brasileiros' : 'Non-Brazilians'}: https://buy.stripe.com/fZu7sMg1G3Tt7nj4Ke0sU01
+${isPortuguese ? "Ajude o projeto a crescer! Doe via PIX (doacao@s4ft.fun) ou Stripe:" : "Help the project grow! Donate via PIX (doacao@s4ft.fun) or Stripe:"}
+- ${isPortuguese ? "Brasileiros" : "Brazilians"}: https://buy.stripe.com/4gM5kE16MfCb4b72C60sU00
+- ${isPortuguese ? "Não brasileiros" : "Non-Brazilians"}: https://buy.stripe.com/fZu7sMg1G3Tt7nj4Ke0sU01
 
-${isPortuguese ? 'Hospede grátis ou profissionalmente em' : 'Host for free or professionally at'} https://www.s4ft.fun 🚀
+${isPortuguese ? "Hospede grátis ou profissionalmente em" : "Host for free or professionally at"} https://www.s4ft.fun 🚀
 `
 
   await fs.writeFile(path.join(projectPath, "README.md"), readme)
 }
 
 program.parse()
+
+export { createProject }

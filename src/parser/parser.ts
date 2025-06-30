@@ -3,8 +3,8 @@ import type * as AST from "./ast.js"
 
 export class Parser {
   private lexer: Lexer
-  private currentToken: Token
-  private peekToken: Token
+  private currentToken!: Token
+  private peekToken!: Token
 
   constructor(input: string) {
     this.lexer = new Lexer(input)

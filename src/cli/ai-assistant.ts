@@ -68,10 +68,11 @@ Responda sempre em português brasileiro, seja prático e forneça exemplos de c
       throw new Error(`API Error: ${response.status}`)
     }
 
-    const data = await response.json()
+    const data: any = await response.json()
     return data.choices[0]?.message?.content || "Desculpe, não consegui processar sua pergunta."
   } catch (error) {
-    console.error("Erro na API do Grok:", error)
+    const err = error as Error
+    console.error("Erro na API do Grok:", err)
 
     // Fallback com respostas pré-definidas
     return getLocalResponse(question)

@@ -1,5 +1,6 @@
 import chalk from "chalk"
 import ora from "ora"
+import type { Ora } from "ora"
 import { execSync } from "child_process"
 import fs from "fs-extra"
 import path from "path"
@@ -34,12 +35,13 @@ export async function deployProject(platform: string): Promise<void> {
         return
     }
   } catch (error) {
-    spinner.fail(`Erro no deploy: ${error.message}`)
-    throw error
+    const err = error as Error
+    spinner.fail(`Erro no deploy: ${err.message}`)
+    throw err
   }
 }
 
-async function deployToS4FTCloud(spinner: ora.Ora): Promise<void> {
+async function deployToS4FTCloud(spinner: Ora): Promise<void> {
   spinner.text = "Fazendo deploy para S4FT Cloud..."
 
   // Verificar se tem token de autenticação
@@ -74,11 +76,12 @@ async function deployToS4FTCloud(spinner: ora.Ora): Promise<void> {
     console.log(chalk.green(`🚀 Seu app está disponível em: ${deployUrl}`))
     console.log(chalk.blue(`📊 Dashboard: https://cloud.s4ft.fun/projects/${projectName}`))
   } catch (error) {
-    throw new Error(`Erro no deploy S4FT Cloud: ${error.message}`)
+    const err = error as Error
+    throw new Error(`Erro no deploy S4FT Cloud: ${err.message}`)
   }
 }
 
-async function deployToVercel(spinner: ora.Ora): Promise<void> {
+async function deployToVercel(spinner: Ora): Promise<void> {
   spinner.text = "Fazendo deploy para Vercel..."
 
   try {
@@ -129,11 +132,12 @@ async function deployToVercel(spinner: ora.Ora): Promise<void> {
     execSync("vercel --prod", { stdio: "inherit" })
     spinner.succeed("Deploy no Vercel concluído!")
   } catch (error) {
-    throw new Error(`Erro no deploy Vercel: ${error.message}`)
+    const err = error as Error
+    throw new Error(`Erro no deploy Vercel: ${err.message}`)
   }
 }
 
-async function deployToNetlify(spinner: ora.Ora): Promise<void> {
+async function deployToNetlify(spinner: Ora): Promise<void> {
   spinner.text = "Fazendo deploy para Netlify..."
 
   try {
@@ -178,11 +182,12 @@ async function deployToNetlify(spinner: ora.Ora): Promise<void> {
     execSync("netlify deploy --prod --dir=dist", { stdio: "inherit" })
     spinner.succeed("Deploy no Netlify concluído!")
   } catch (error) {
-    throw new Error(`Erro no deploy Netlify: ${error.message}`)
+    const err = error as Error
+    throw new Error(`Erro no deploy Netlify: ${err.message}`)
   }
 }
 
-async function deployToGitHubPages(spinner: ora.Ora): Promise<void> {
+async function deployToGitHubPages(spinner: Ora): Promise<void> {
   spinner.text = "Fazendo deploy para GitHub Pages..."
 
   try {
@@ -213,7 +218,8 @@ async function deployToGitHubPages(spinner: ora.Ora): Promise<void> {
     console.log(chalk.green(`🚀 Seu app está disponível em: ${githubPagesUrl}`))
     console.log(chalk.blue(`⏰ Pode levar alguns minutos para ficar disponível`))
   } catch (error) {
-    throw new Error(`Erro no deploy GitHub Pages: ${error.message}`)
+    const err = error as Error
+    throw new Error(`Erro no deploy GitHub Pages: ${err.message}`)
   }
 }
 
