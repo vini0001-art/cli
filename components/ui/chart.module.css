@@ -6,3 +6,7 @@
 .chart-tooltip-indicator[data-indicator-color] {
   --indicator-color: attr(data-indicator-color color, #ccc);
 }
+.chart-indicator {
+  background-color: var(--color-bg);
+  border-color: var(--color-border);
+}

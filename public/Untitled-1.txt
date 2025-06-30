@@ -1,0 +1,16 @@
+import * as React from "react"
+
+export function CustomIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 251 225"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      {/* Substitua o conteúdo abaixo pelo path do SVG convertido */}
+      <path d="M125.5,0 L251,225 L0,225 Z" />
+      <path d="M125.5,50 L200,200 L51,200 Z" fill="#fff" />
+    </svg>
+  )
+}
