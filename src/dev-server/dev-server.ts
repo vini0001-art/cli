@@ -96,48 +96,133 @@ export class DevServer {
   }
 
   private generateIndexHTML(): string {
-    return `
-<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>S4FT App</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>S4FT - Simple And Fast Templates</title>
   <style>
-    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f9f9f9; }
-    #root { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .s4ft-logo { width: 120px; margin-bottom: 2rem; }
-    .s4ft-title { font-size: 2.2rem; color: #2563eb; margin-bottom: 1rem; }
-    .s4ft-desc { font-size: 1.1rem; color: #333; margin-bottom: 2rem; text-align: center; max-width: 400px; }
-    .s4ft-link { color: #2563eb; text-decoration: none; font-weight: bold; }
-    .s4ft-footer { margin-top: 2rem; color: #888; font-size: 0.95rem; }
-    .s4ft-docs { background: #e0f2fe; border: 1px solid #38bdf8; color: #0369a1; padding: 1rem 2rem; border-radius: 8px; margin-bottom: 2rem; font-size: 1.08rem; }
-    .s4ft-error { background: #fee; border: 1px solid #fcc; padding: 1rem; margin: 1rem; border-radius: 4px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 600px;
+      margin: 2rem;
+    }
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 2rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: white;
+      font-weight: bold;
+    }
+    .title {
+      font-size: 2.5rem;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .subtitle {
+      font-size: 1.2rem;
+      color: #667eea;
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
+    .welcome-text {
+      font-size: 1.1rem;
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .highlight {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+    }
+    .docs-link {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.2s;
+      margin: 0.5rem;
+    }
+    .docs-link:hover {
+      transform: translateY(-2px);
+    }
+    .footer {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e2e8f0;
+      color: #718096;
+      font-size: 0.9rem;
+    }
+    .status {
+      display: inline-block;
+      background: #48bb78;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
-  <div id="root">
-    <img src="/placeholder-logo.svg" alt="Logo S4FT" class="s4ft-logo" />
-    <div class="s4ft-title">Bem-vindo ao S4FT 🚀</div>
-    <div class="s4ft-docs">
-      📚 <b>Documentação:</b> <a href="https://www.s4ft.fun/docs" class="s4ft-link" target="_blank">https://www.s4ft.fun/docs</a>
-    </div>
-    <div class="s4ft-desc">
-      Parabéns! Seu servidor S4FT está rodando.<br>
-      Você faz parte de uma nova geração de desenvolvedores brasileiros.<br>
+  <div class="container">
+    <div class="logo">S4FT</div>
+    <div class="status">🚀 Servidor Ativo</div>
+    <h1 class="title">Bem-vindo ao S4FT!</h1>
+    <p class="subtitle">Simple And Fast Templates</p>
+    
+    <div class="welcome-text">
+      <p>🎉 <strong>Parabéns pela iniciativa!</strong></p>
+      <p>Você está usando o <span class="highlight">primeiro framework web brasileiro</span> focado em simplicidade e performance.</p>
       <br>
-      <b>Você não está sozinho!</b> Se precisar de ajuda, visite <a href="https://www.s4ft.fun" class="s4ft-link" target="_blank">nosso site</a>.<br>
-      Venha contribuir e tornar realidade essa mudança no desenvolvimento web nacional!
+      <p>🇧🇷 Você faz parte de uma nova geração de desenvolvedores que está mudando o cenário tech nacional!</p>
     </div>
-    <div class="s4ft-footer">
-      <a href="https://www.s4ft.fun" class="s4ft-link" target="_blank">www.s4ft.fun</a>
+
+    <div>
+      <a href="https://www.s4ft.fun/docs" class="docs-link" target="_blank">
+        📚 Documentação
+      </a>
+      <a href="https://github.com/s4ft-framework" class="docs-link" target="_blank">
+        💻 GitHub
+      </a>
+    </div>
+
+    <div class="footer">
+      <p><strong>🌟 Ajude o S4FT a crescer!</strong></p>
+      <p>Contribua no GitHub • Doe via PIX: doacao@s4ft.fun</p>
+      <p>Deploy gratuito em <a href="https://www.s4ft.fun" style="color: #667eea;">s4ft.fun</a></p>
     </div>
   </div>
+
   <script>
-    // Hot reload WebSocket connection
+    // Hot reload WebSocket
     const ws = new WebSocket('ws://localhost:${this.options.port}');
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -145,21 +230,6 @@ export class DevServer {
         window.location.reload();
       }
     };
-    // Load and render the app
-    fetch('/app-bundle.js')
-      .then(response => response.text())
-      .then(code => {
-        try {
-          const transformedCode = Babel.transform(code, {
-            presets: ['react']
-          }).code;
-          eval(transformedCode);
-        } catch (error) {
-          document.getElementById('root').innerHTML += 
-            '<div class="s4ft-error"><h2>Compilation Error</h2><pre>' + 
-            error.message + '</pre></div>';
-        }
-      });
   </script>
 </body>
 </html>

@@ -1,73 +1,131 @@
-import dotenv from "dotenv";
-dotenv.config();
-// import meuPlugin from "./meuPlugin";
-// import customAnalyticsPlugin from "./plugins/customAnalyticsPlugin"; // Removido pois o módulo não existe
-
-const config = {
+export interface S4FTConfig {
   // Configurações básicas
-  port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
-  basePath: process.env.BASE_PATH || "/",
-  env: {
-    API_URL: process.env.API_URL || "https://api.meusite.com"
-  },
+  name?: string
+  version?: string
+  description?: string
 
-  // Suporte a módulos customizados
-  transpileModules: [],
-
-  // Features experimentais
-  experimental: {
-    ssr: true, // Ative SSR por padrão
-    ssg: false
-  },
-
-  // Hooks e plug-ins do framework
-  hooks: {
-    onRouteLoad: (path: string) => {
-      console.log("📦 Nova rota carregada:", path);
-      // Você pode adicionar lógica customizada aqui
-    },
-    onBuild: () => {
-      console.log("🔨 Build iniciado!");
-      // Lógica customizada de build
-    },
-    onSSR: (ctx: any) => {
-      console.log("🧬 SSR executado!", ctx);
-      // Manipule contexto do SSR aqui
-    }
-  },
-
-  // Plug-ins customizados (exemplo)
-  plugins: [
-    // meuPlugin,
-    "s4ft-plugin-auth-github", // instalado via npm
-    "s4ft-plugin-drive",
-    // customAnalyticsPlugin({ token: "abc123" }) // Removido pois o módulo não existe
-    // Exemplo de plug-in customizado:
-    // (plugin) => plugin({ config, app, server })
-    // function meuPlugin({ config, app, server }) {
-    //   // Lógica do plug-in aqui
-    // }
-  ],
-
-  // Hot reload customizado
-  watch: [
-    "app/**/*.sft",
-    "components/**/*.sft",
-    "styles/**/*.css",
-    "s4ft.config.ts"
-  ],
-
-  // UI embutida (exemplo)
-  ui: {
-    enabled: true,
-    theme: "default"
-  },
-
-  // Deploy integrado (exemplo)
-  deploy: {
-    provider: "s4ft.fun",
-    githubIntegration: true
+  // Configurações de build
+  build?: {
+    outDir?: string
+    minify?: boolean
+    sourceMaps?: boolean
+    target?: "es5" | "es2015" | "es2017" | "es2018" | "es2019" | "es2020" | "esnext"
+    splitting?: boolean
+    treeshaking?: boolean
   }
-};
 
-export default config;
+  // Configurações do servidor de desenvolvimento
+  dev?: {
+    port?: number
+    host?: string
+    open?: boolean
+    https?: boolean
+    proxy?: Record<string, string>
+  }
+
+  // Configurações de deploy
+  deploy?: {
+    target?: "s4ft-cloud" | "vercel" | "netlify" | "github-pages"
+    domain?: string
+    env?: Record<string, string>
+  }
+
+  // Plugins
+  plugins?: (string | [string, any])[]
+
+  // Configurações de CSS
+  css?: {
+    preprocessor?: "sass" | "less" | "stylus"
+    postcss?: boolean
+    tailwind?: boolean
+  }
+
+  // Configurações de TypeScript
+  typescript?: {
+    strict?: boolean
+    target?: string
+    lib?: string[]
+  }
+
+  // Configurações de PWA
+  pwa?: {
+    name?: string
+    shortName?: string
+    description?: string
+    themeColor?: string
+    backgroundColor?: string
+    icons?: Array<{
+      src: string
+      sizes: string
+      type: string
+    }>
+  }
+
+  // Configurações de SEO
+  seo?: {
+    title?: string
+    description?: string
+    keywords?: string[]
+    author?: string
+    image?: string
+  }
+
+  // Configurações de Analytics
+  analytics?: {
+    google?: string
+    vercel?: boolean
+    plausible?: string
+  }
+
+  // Configurações de autenticação
+  auth?: {
+    providers?: ("google" | "github" | "facebook" | "auth0")[]
+    redirectUrl?: string
+    secret?: string
+  }
+
+  // Configurações de banco de dados
+  database?: {
+    provider?: "supabase" | "planetscale" | "mongodb" | "postgresql"
+    url?: string
+    migrations?: string
+  }
+}
+
+// Configuração padrão do S4FT
+const defaultConfig: S4FTConfig = {
+  build: {
+    outDir: "dist",
+    minify: true,
+    sourceMaps: false,
+    target: "es2020",
+    splitting: true,
+    treeshaking: true,
+  },
+
+  dev: {
+    port: 3000,
+    host: "localhost",
+    open: true,
+    https: false,
+  },
+
+  deploy: {
+    target: "s4ft-cloud",
+  },
+
+  css: {
+    postcss: true,
+    tailwind: true,
+  },
+
+  typescript: {
+    strict: true,
+    target: "es2020",
+    lib: ["dom", "es2020"],
+  },
+
+  plugins: [],
+}
+
+export default defaultConfig

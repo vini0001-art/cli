@@ -1,17 +1,20 @@
-export interface ASTNode {
+export interface Node {
   type: string
+}
+
+export interface ASTNode extends Node {
   line?: number
   column?: number
 }
 
-export interface Program extends ASTNode {
+export interface Program extends Node {
   type: "Program"
-  body: Statement[]
+  body: Node[]
 }
 
-export interface Statement extends ASTNode {}
+export interface Statement extends Node {}
 
-export interface Expression extends ASTNode {}
+export interface Expression extends Node {}
 
 export interface ImportStatement extends Statement {
   type: "ImportStatement"
@@ -19,7 +22,7 @@ export interface ImportStatement extends Statement {
   source: string
 }
 
-export interface ImportSpecifier extends ASTNode {
+export interface ImportSpecifier extends Node {
   type: "ImportSpecifier"
   imported: string
   local: string
@@ -30,55 +33,48 @@ export interface ExportStatement extends Statement {
   declaration: ComponentDeclaration | PageDeclaration | LayoutDeclaration
 }
 
-export interface ComponentDeclaration extends Statement {
+export interface ComponentDeclaration extends Node {
   type: "ComponentDeclaration"
   name: string
   props: PropDeclaration[]
   state: StateDeclaration[]
   events: EventDeclaration[]
-  body: JSXElement
+  body: string
 }
 
-export interface PageDeclaration extends Statement {
+export interface PageDeclaration extends Node {
   type: "PageDeclaration"
   name: string
-  props: PropDeclaration[]
   state: StateDeclaration[]
   events: EventDeclaration[]
-  body: JSXElement
+  body: string
 }
 
-export interface LayoutDeclaration extends Statement {
+export interface LayoutDeclaration extends Node {
   type: "LayoutDeclaration"
   name: string
   props: PropDeclaration[]
-  state: StateDeclaration[]
-  events: EventDeclaration[]
-  body: JSXElement
+  body: string
 }
 
-export interface PropDeclaration extends ASTNode {
-  type: "PropDeclaration"
+export interface PropDeclaration {
   name: string
-  dataType: string
-  defaultValue?: Expression
+  type: string
+  defaultValue: string | null
 }
 
-export interface StateDeclaration extends ASTNode {
-  type: "StateDeclaration"
+export interface StateDeclaration {
   name: string
-  dataType: string
-  initialValue: Expression
+  type: string
+  defaultValue: string | null
 }
 
-export interface EventDeclaration extends ASTNode {
-  type: "EventDeclaration"
+export interface EventDeclaration {
   name: string
-  parameters: Parameter[]
-  body: Statement[]
+  body: string
 }
 
-export interface Parameter extends ASTNode {
+export interface Parameter extends Node {
   type: "Parameter"
   name: string
   dataType: string
@@ -92,7 +88,7 @@ export interface JSXElement extends Expression {
   selfClosing: boolean
 }
 
-export interface JSXAttribute extends ASTNode {
+export interface JSXAttribute extends Node {
   type: "JSXAttribute"
   name: string
   value: Expression | string

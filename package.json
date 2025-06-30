@@ -3,21 +3,6 @@
   "version": "1.0.1",
   "private": false,
   "description": "**s4ft** (Simple And Fast Templates) is a declarative web development language and framework inspired by Next.js. It provides an intuitive syntax for building modern web applications with built-in routing, state management, and component architecture.",
-  "main": "./dist/index.js",
-  "bin": {
-    "s4ft": "./dist/bin/s4ft.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "dev": "node dist/dev-server/dev-server.js",
-    "start": "node dist/index.js",
-    "cli": "node dist/bin/s4ft.js",
-    "postinstall": "node ./bin/postinstall.js"
-  },
-  "directories": {
-    "lib": "lib",
-    "example": "examples"
-  },
   "keywords": [
     "framework",
     "s4ft",
@@ -27,34 +12,117 @@
     "fullstack",
     "web-framework",
     "react",
-    "nextjs-alternative"
+    "nextjs-alternative",
+    "brazilian-framework"
   ],
-  "author": "Marcos Dresbach",
+  "homepage": "https://s4ft.fun",
+  "bugs": {
+    "url": "https://github.com/s4ft-framework/s4ft/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/s4ft-framework/s4ft.git"
+  },
   "license": "MIT",
+  "author": "Marcos Dresbach",
+  "main": "./dist/index.js",
+  "bin": {
+    "s4ft": "./dist/bin/s4ft.js"
+  },
+  "directories": {
+    "lib": "lib",
+    "example": "examples"
+  },
+  "scripts": {
+    "build": "tsc",
+    "cli": "node dist/bin/s4ft.js",
+    "dev": "node dist/dev-server/dev-server.js",
+    "format": "prettier --write src/**/*.ts",
+    "postinstall": "node ./bin/postinstall.js",
+    "lint": "eslint src/**/*.ts",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
   "dependencies": {
-    "bufferutil": "latest",
+    "@radix-ui/react-accordion": "latest",
+    "@radix-ui/react-alert-dialog": "latest",
+    "@radix-ui/react-aspect-ratio": "latest",
+    "@radix-ui/react-avatar": "latest",
+    "@radix-ui/react-checkbox": "latest",
+    "@radix-ui/react-collapsible": "latest",
+    "@radix-ui/react-context-menu": "latest",
+    "@radix-ui/react-dialog": "latest",
+    "@radix-ui/react-dropdown-menu": "latest",
+    "@radix-ui/react-hover-card": "latest",
+    "@radix-ui/react-label": "latest",
+    "@radix-ui/react-menubar": "latest",
+    "@radix-ui/react-navigation-menu": "latest",
+    "@radix-ui/react-popover": "latest",
+    "@radix-ui/react-progress": "latest",
+    "@radix-ui/react-radio-group": "latest",
+    "@radix-ui/react-scroll-area": "latest",
+    "@radix-ui/react-select": "latest",
+    "@radix-ui/react-separator": "latest",
+    "@radix-ui/react-slider": "latest",
+    "@radix-ui/react-slot": "latest",
+    "@radix-ui/react-switch": "latest",
+    "@radix-ui/react-tabs": "latest",
+    "@radix-ui/react-toast": "latest",
+    "@radix-ui/react-toggle": "latest",
+    "@radix-ui/react-toggle-group": "latest",
+    "@radix-ui/react-tooltip": "latest",
+    "bufferutil": "^4.0.8",
     "chalk": "latest",
+    "child_process": "latest",
     "chokidar": "latest",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "latest",
     "commander": "latest",
-    "cors": "^2.8.5",
+    "cors": "latest",
+    "embla-carousel-react": "latest",
     "express": "latest",
     "fs-extra": "latest",
     "http": "latest",
+    "input-otp": "latest",
+    "inquirer": "latest",
+    "lucide-react": "^0.454.0",
+    "next": "15.2.4",
+    "next-themes": "latest",
     "ora": "latest",
     "path": "latest",
-    "react-dom": "^19.1.0",
+    "react": "^19",
+    "react-day-picker": "latest",
+    "react-dom": "^19",
+    "react-hook-form": "latest",
+    "react-resizable-panels": "latest",
+    "recharts": "latest",
+    "sonner": "latest",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
     "terser": "latest",
-    "utf-8-validate": "latest",
-    "ws": "^8.18.2"
+    "utf-8-validate": "^6.0.3",
+    "vaul": "latest",
+    "ws": "latest"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
     "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^8.2.10",
     "@types/node": "^22",
-    "@types/react-dom": "^19.1.6",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/ws": "^8.5.10",
     "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "postcss": "^8.5",
+    "prettier": "^3.1.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
