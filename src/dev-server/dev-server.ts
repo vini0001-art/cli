@@ -229,7 +229,7 @@ export class DevServer {
         sftFile = dynamicMatch.file;
         params = dynamicMatch.params;
       } else {
-        res.status(404).send("Page not found");
+        res.send(this.generateIndexHTML());
         return;
       }
     }
