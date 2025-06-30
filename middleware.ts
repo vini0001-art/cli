@@ -1,9 +1,19 @@
-import { Request, Response, NextFunction } from "express";
+import { type NextRequest, NextResponse } from "next/server"
 
-// Middleware padrão: você pode personalizar a lógica aqui
-export default function middleware(req: Request, res: Response, next: NextFunction) {
-  // Exemplo: log de requisições
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  // Você pode adicionar autenticação, headers, etc.
-  next();
+export function middleware(request: NextRequest) {
+  // Log da requisição
+  console.log(`${request.method} ${request.url}`)
+
+  // Adicionar headers de segurança
+  const response = NextResponse.next()
+
+  response.headers.set("X-Frame-Options", "DENY")
+  response.headers.set("X-Content-Type-Options", "nosniff")
+  response.headers.set("Referrer-Policy", "origin-when-cross-origin")
+
+  return response
+}
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 }

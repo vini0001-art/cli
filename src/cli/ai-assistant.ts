@@ -4,7 +4,8 @@ import chalk from "chalk"
 import inquirer from "inquirer"
 
 export async function askAI(question: string) {
-  console.log(chalk.blue("🤖 S4FT AI Assistant\n"))
+  console.log(chalk.blue("🤖 IA Assistant:"))
+  console.log(chalk.yellow(`Pergunta: ${question}`))
 
   // Simular resposta da IA (em produção, integraria com Grok)
   const responses: Record<string, string> = {
@@ -61,6 +62,40 @@ ${chalk.green(`component Contador {
 
 O state é automaticamente reativo - quando muda, a UI atualiza!
     `,
+    "como criar um formulário": `
+Para criar um formulário em S4FT, use o componente form com state para gerenciar os dados:
+
+${chalk.green(`component MeuFormulario {
+  state {
+    nome: string = "",
+    email: string = ""
+  }
+  
+  event onChangeNome(value: string) {
+    nome = value
+  }
+  
+  event onChangeEmail(value: string) {
+    email = value
+  }
+  
+  event onSubmit() {
+    console.log("Nome:", nome)
+    console.log("Email:", email)
+  }
+  
+  <form onSubmit={onSubmit}>
+    <input type="text" value={nome} onChange={onChangeNome} placeholder="Nome" />
+    <input type="email" value={email} onChange={onChangeEmail} placeholder="Email" />
+    <button type="submit">Enviar</button>
+  </form>
+}`)}
+
+Você pode usar eventos como onChange e onSubmit para capturar interações do usuário.
+O S4FT suporta validação automática de formulários com a sintaxe validate.
+Para estilização, recomendo usar Tailwind CSS que já vem integrado.
+Componentes podem ser reutilizados importando de outros arquivos .s4ft.
+    `,
   }
 
   const lowerQuestion = question.toLowerCase()
@@ -84,6 +119,7 @@ Aqui estão algumas perguntas comuns:
 • "como criar um componente"
 • "como fazer deploy" 
 • "como usar state"
+• "como criar um formulário"
 
 Ou consulte a documentação: ${chalk.cyan("https://s4ft.fun/docs")}
     `),

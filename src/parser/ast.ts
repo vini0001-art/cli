@@ -148,3 +148,35 @@ export interface ForStatement extends Statement {
   iterable: Expression
   body: Statement[]
 }
+
+export interface PageNode extends ASTNode {
+  type: "Page"
+  name: string
+  body: ASTNode[]
+}
+
+export interface ComponentNode extends ASTNode {
+  type: "Component"
+  name: string
+  body: ASTNode[]
+}
+
+export interface StateNode extends ASTNode {
+  type: "State"
+  variables: Array<{
+    name: string
+    type: string
+    value: string
+  }>
+}
+
+export interface EventNode extends ASTNode {
+  type: "Event"
+  name: string
+  body: string
+}
+
+export interface JSXNode extends ASTNode {
+  type: "JSX"
+  content: string
+}

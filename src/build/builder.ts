@@ -1,88 +1,105 @@
-import { Parser } from "../parser/parser.js";
-import * as AST from "../parser/ast.js";
-import { minify } from "terser";
-import fs from "fs-extra";
-import path from "path";
+import fs from "fs-extra"
+import path from "path"
+import chalk from "chalk"
+import { transpileS4FT } from "../transpiler/transpiler.js"
 
-// Interface para o transpiler
-interface Transpiler {
-  transpile(ast: any): string;
-}
+export async function buildProject(): Promise<void> {
+  console.log(chalk.blue("📦 Iniciando build do projeto S4FT..."))
 
-interface BuilderOptions {
-  minify: boolean;
-  sourceMaps: boolean;
-  // ...outras opções...
-}
+  const srcDir = path.join(process.cwd(), "app")
+  const distDir = path.join(process.cwd(), "dist")
 
-export class Builder {
-  private transpiler: Transpiler;
-  private options: BuilderOptions;
+  // Limpar diretório de saída
+  await fs.remove(distDir)
+  await fs.ensureDir(distDir)
 
-  constructor(transpiler: Transpiler, options: BuilderOptions) {
-    this.transpiler = transpiler;
-    this.options = options;
+  // Encontrar todos os arquivos .s4ft
+  const s4ftFiles = await findS4FTFiles(srcDir)
+
+  console.log(chalk.yellow(`📄 Encontrados ${s4ftFiles.length} arquivos .s4ft`))
+
+  // Transpilar cada arquivo
+  for (const file of s4ftFiles) {
+    await transpileFile(file, srcDir, distDir)
   }
 
-  run() {
-    // Implementação básica, pode ser expandida conforme necessário
-    console.log("Método run chamado. Implemente a lógica de build aqui.");
+  // Copiar arquivos estáticos
+  await copyStaticFiles()
+
+  // Gerar HTML de produção
+  await generateHTML(distDir)
+
+  console.log(chalk.green.bold("✅ Build concluído com sucesso!"))
+  console.log(chalk.cyan(`📁 Arquivos gerados em: ${distDir}`))
+}
+
+async function findS4FTFiles(dir: string): Promise<string[]> {
+  const files: string[] = []
+
+  if (!(await fs.pathExists(dir))) {
+    return files
   }
 
-  // ...existing code...
+  const entries = await fs.readdir(dir, { withFileTypes: true })
 
-  public async builds4ftFile(filePath: string, category: string): Promise<void> {
-    try {
-      const content = await fs.readFile(filePath, "utf-8");
-      const parser = new Parser(content);
-      const ast = parser.parse();
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name)
 
-      if (!this.transpiler) {
-        throw new Error("Transpiler não definido.");
-      }
-
-      let jsCode = this.transpiler.transpile(ast);
-
-      // Minificar se habilitado
-      if (this.options.minify) {
-        const minified = await minify(jsCode, {
-          sourceMap: this.options.sourceMaps,
-          compress: {
-            drop_console: true,
-            drop_debugger: true,
-          },
-          mangle: true,
-        });
-
-        jsCode = minified.code || jsCode;
-
-        if (this.options.sourceMaps && minified.map) {
-          const mapPath = this.getOutputPath(filePath, category, ".js.map");
-          await fs.ensureDir(path.dirname(mapPath));
-          await fs.writeFile(mapPath, JSON.stringify(minified.map));
-        }
-      }
-
-      const outputPath = this.getOutputPath(filePath, category, ".js");
-      await fs.ensureDir(path.dirname(outputPath));
-      await fs.writeFile(outputPath, jsCode);
-    } catch (error: any) {
-      console.error(`❌ Erro ao construir ${filePath}:`, error?.message || error);
-      throw error;
+    if (entry.isDirectory()) {
+      files.push(...(await findS4FTFiles(fullPath)))
+    } else if (entry.name.endsWith(".s4ft")) {
+      files.push(fullPath)
     }
   }
 
-  // ...existing code...
+  return files
+}
 
-  /**
-   * Retorna o caminho de saída para um arquivo de entrada, categoria e extensão.
-   * Agora a pasta 'dist' fica na raiz do projeto.
-   */
-  private getOutputPath(filePath: string, category: string, extension: string): string {
-    const projectRoot = process.cwd();
-    const relPath = path.relative(projectRoot, filePath);
-    const base = path.basename(filePath, path.extname(filePath));
-    // Exemplo: saída para '<root>/dist/<categoria>/<relPath sem nome do arquivo>/<arquivo>.ext'
-    return path.join(projectRoot, 'dist', category, path.dirname(relPath), base + extension);
+async function transpileFile(filePath: string, srcDir: string, distDir: string): Promise<void> {
+  try {
+    const content = await fs.readFile(filePath, "utf-8")
+    const transpiled = transpileS4FT(content)
+
+    const relativePath = path.relative(srcDir, filePath)
+    const outputPath = path.join(distDir, relativePath.replace(".s4ft", ".js"))
+
+    await fs.ensureDir(path.dirname(outputPath))
+    await fs.writeFile(outputPath, transpiled)
+
+    console.log(chalk.green(`✅ ${relativePath} → ${path.relative(process.cwd(), outputPath)}`))
+  } catch (error) {
+    console.error(chalk.red(`❌ Erro ao transpilar ${filePath}:`), error)
+    throw error
   }
+}
+
+async function copyStaticFiles(): Promise<void> {
+  const publicDir = path.join(process.cwd(), "public")
+  const distPublicDir = path.join(process.cwd(), "dist", "public")
+
+  if (await fs.pathExists(publicDir)) {
+    await fs.copy(publicDir, distPublicDir)
+    console.log(chalk.green("✅ Arquivos estáticos copiados"))
+  }
+}
+
+async function generateHTML(distDir: string): Promise<void> {
+  const htmlTemplate = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S4FT App</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="./page.js"></script>
+</body>
+</html>`
+
+  await fs.writeFile(path.join(distDir, "index.html"), htmlTemplate)
+  console.log(chalk.green("✅ HTML de produção gerado"))
 }

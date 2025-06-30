@@ -1,5 +1,3 @@
-"use client"
-
 import inquirer from "inquirer"
 import chalk from "chalk"
 import fs from "fs-extra"
@@ -13,128 +11,104 @@ export interface ProjectConfig {
   auth: string | null
   database: string | null
   styling: "tailwind" | "css"
+  packageManager: "npm" | "yarn" | "pnpm"
 }
 
-export async function createProject(initialConfig?: Partial<ProjectConfig>) {
+export async function createProject(projectName?: string, options: any = {}): Promise<void> {
   console.log(chalk.blue.bold("\n🚀 Bem-vindo ao S4FT Framework!\n"))
 
-  const config: ProjectConfig = await inquirer.prompt([
-    {
-      type: "input",
-      name: "name",
-      message: "📁 Nome do projeto:",
-      default: initialConfig?.name || "meu-projeto-s4ft",
-      validate: (input: string) => {
-        if (!input.trim()) return "Nome do projeto é obrigatório"
-        if (!/^[a-zA-Z0-9-_]+$/.test(input)) return "Use apenas letras, números, - e _"
-        return true
+  const config: ProjectConfig = {
+    name: projectName || "",
+    language: options.language === "js" ? "javascript" : "typescript",
+    template: options.template || "basic",
+    features: [],
+    auth: null,
+    database: null,
+    styling: "tailwind",
+    packageManager: "npm",
+  }
+
+  if (!config.name) {
+    const nameAnswer = await inquirer.prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Nome do projeto:",
+        validate: (input: string) => {
+          if (!input.trim()) return "Nome é obrigatório"
+          if (!/^[a-zA-Z0-9-_]+$/.test(input)) return "Use apenas letras, números, - e _"
+          return true
+        },
       },
+    ])
+    config.name = nameAnswer.name
+  }
+
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "template",
+      message: "Escolha um template:",
+      choices: [
+        { name: "📄 Básico - Página simples", value: "basic" },
+        { name: "📝 Blog - Site com posts", value: "blog" },
+        { name: "🛒 E-commerce - Loja online", value: "ecommerce" },
+        { name: "📊 Dashboard - Painel admin", value: "dashboard" },
+      ],
+      default: config.template,
     },
     {
       type: "list",
       name: "language",
-      message: "🔧 Linguagem:",
+      message: "Linguagem:",
       choices: [
         { name: "TypeScript (recomendado)", value: "typescript" },
         { name: "JavaScript", value: "javascript" },
       ],
-      default: initialConfig?.language || "typescript",
-    },
-    {
-      type: "list",
-      name: "template",
-      message: "📋 Template do projeto:",
-      choices: [
-        { name: "🏠 Básico - Página simples", value: "basic" },
-        { name: "📝 Blog - Site com posts", value: "blog" },
-        { name: "🛒 E-commerce - Loja online", value: "ecommerce" },
-        { name: "📊 Dashboard - Painel administrativo", value: "dashboard" },
-      ],
-      default: initialConfig?.template || "basic",
+      default: config.language,
     },
     {
       type: "checkbox",
       name: "features",
-      message: "✨ Funcionalidades extras:",
+      message: "Recursos extras:",
       choices: [
         { name: "🔐 Autenticação", value: "auth" },
         { name: "💾 Banco de dados", value: "database" },
         { name: "📱 PWA", value: "pwa" },
         { name: "📈 Analytics", value: "analytics" },
-        { name: "🌙 Dark mode", value: "darkmode" },
       ],
     },
     {
       type: "list",
-      name: "auth",
-      message: "🔐 Provedor de autenticação:",
-      choices: [
-        { name: "Nenhum", value: null },
-        { name: "Google", value: "google" },
-        { name: "GitHub", value: "github" },
-        { name: "Auth0", value: "auth0" },
-      ],
-      when: (answers: any) => answers.features.includes("auth"),
-    },
-    {
-      type: "list",
-      name: "database",
-      message: "💾 Banco de dados:",
-      choices: [
-        { name: "Nenhum", value: null },
-        { name: "Supabase", value: "supabase" },
-        { name: "MongoDB", value: "mongodb" },
-        { name: "PostgreSQL", value: "postgresql" },
-      ],
-      when: (answers: any) => answers.features.includes("database"),
+      name: "packageManager",
+      message: "Gerenciador de pacotes:",
+      choices: ["npm", "yarn", "pnpm"],
+      default: "npm",
     },
   ])
 
-  // Adicionar configurações padrão
-  const fullConfig: ProjectConfig = {
-    ...config,
-    styling: "tailwind",
-    features: config.features || [],
-    auth: config.auth || null,
-    database: config.database || null,
-  }
+  Object.assign(config, answers)
 
   console.log(chalk.yellow("\n📦 Criando projeto..."))
 
-  await createProjectStructure(fullConfig)
+  await generateProject(config)
 
-  console.log(chalk.green.bold("\n✅ Projeto criado com sucesso!"))
-  console.log(
-    chalk.cyan(`
-📁 Próximos passos:
-   cd ${fullConfig.name}
-   npm install
-   npm run dev
-
-🚀 Comandos disponíveis:
-   s4ft dev          - Servidor de desenvolvimento
-   s4ft build        - Build para produção
-   s4ft generate     - Gerar componentes/páginas
-   s4ft ask          - AI Assistant
-   s4ft deploy       - Deploy automático
-  `),
-  )
+  console.log(chalk.green.bold(`\n✅ Projeto ${config.name} criado com sucesso!`))
+  console.log(chalk.cyan(`\nPróximos passos:`))
+  console.log(chalk.white(`  cd ${config.name}`))
+  console.log(chalk.white(`  ${config.packageManager} install`))
+  console.log(chalk.white(`  ${config.packageManager} run dev`))
 }
 
-async function createProjectStructure(config: ProjectConfig) {
+async function generateProject(config: ProjectConfig): Promise<void> {
   const projectPath = path.join(process.cwd(), config.name)
 
-  // Criar estrutura de pastas
   await fs.ensureDir(projectPath)
-  await fs.ensureDir(path.join(projectPath, "app"))
-  await fs.ensureDir(path.join(projectPath, "components"))
-  await fs.ensureDir(path.join(projectPath, "public"))
-  await fs.ensureDir(path.join(projectPath, "styles"))
 
-  // Criar package.json
+  // Package.json
   const packageJson = {
     name: config.name,
-    version: "1.0.0",
+    version: "0.1.0",
     private: true,
     scripts: {
       dev: "s4ft dev",
@@ -143,170 +117,135 @@ async function createProjectStructure(config: ProjectConfig) {
       deploy: "s4ft deploy",
     },
     dependencies: {
-      "s4ft-framework": "^1.0.1",
-      react: "^18.2.0",
-      "react-dom": "^18.2.0",
+      "s4ft-framework": "^1.0.0",
+      react: "^18.0.0",
+      "react-dom": "^18.0.0",
     },
     devDependencies: {
-      "@types/react": "^18.2.0",
-      "@types/react-dom": "^18.2.0",
-      typescript: config.language === "typescript" ? "^5.0.0" : undefined,
+      "@types/react": "^18.0.0",
+      "@types/react-dom": "^18.0.0",
+      typescript: "^5.0.0",
     },
   }
 
   await fs.writeJSON(path.join(projectPath, "package.json"), packageJson, { spaces: 2 })
 
-  // Criar s4ft.config.ts
-  const configFile = `export default {
+  // Configuração S4FT
+  const s4ftConfig = `export default {
   build: {
     outDir: 'dist',
-    minify: true,
-    sourceMaps: false,
+    minify: true
   },
   dev: {
     port: 3000,
-    open: true,
+    open: true
   },
-  plugins: [
-    ${config.features.includes("pwa") ? "'s4ft-plugin-pwa'," : ""}
-    ${config.features.includes("analytics") ? "'s4ft-plugin-analytics'," : ""}
-    ${config.auth ? `['s4ft-plugin-auth', { provider: '${config.auth}' }],` : ""}
-    ${config.database ? `['s4ft-plugin-database', { type: '${config.database}' }],` : ""}
-  ],
-  deploy: {
-    target: 's4ft-cloud',
-    domain: '${config.name}.s4ft.fun'
-  }
+  plugins: ${JSON.stringify(
+    config.features.map((f) => `s4ft-plugin-${f}`),
+    null,
+    2,
+  )}
 }`
 
-  await fs.writeFile(path.join(projectPath, "s4ft.config.ts"), configFile)
+  await fs.writeFile(path.join(projectPath, "s4ft.config.ts"), s4ftConfig)
 
-  // Criar arquivos baseados no template
-  await createTemplateFiles(projectPath, config)
+  // Estrutura de pastas
+  await fs.ensureDir(path.join(projectPath, "app"))
+  await fs.ensureDir(path.join(projectPath, "components"))
+  await fs.ensureDir(path.join(projectPath, "public"))
+
+  // Página inicial
+  const pageContent = getTemplateContent(config.template)
+  await fs.writeFile(path.join(projectPath, "app", "page.s4ft"), pageContent)
+
+  console.log(chalk.green(`📁 Estrutura criada em ${projectPath}`))
 }
 
-async function createTemplateFiles(projectPath: string, config: ProjectConfig) {
+function getTemplateContent(template: string): string {
   const templates = {
-    basic: {
-      "app/page.s4ft": `page Home {
+    basic: `page Home {
   state {
-    count: number = 0
+    message: string = "Bem-vindo ao S4FT!"
   }
   
-  event increment() {
-    count = count + 1
-  }
-  
-  <div className="home-page">
-    <h1>Bem-vindo ao S4FT!</h1>
-    <p>Contador: {count}</p>
-    <button onClick={increment}>Incrementar</button>
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+    <div className="text-center">
+      <h1 className="text-4xl font-bold text-gray-900 mb-4">{message}</h1>
+      <p className="text-gray-600">Seu projeto S4FT está funcionando!</p>
+    </div>
   </div>
 }`,
-      "app/layout.s4ft": `layout RootLayout {
-  <html lang="pt-BR">
-    <head>
-      <title>${config.name}</title>
-      <meta name="description" content="Projeto criado com S4FT Framework" />
-    </head>
-    <body>
-      <header>
-        <nav>
-          <a href="/">Início</a>
-          <a href="/about">Sobre</a>
-        </nav>
-      </header>
-      <main>{children}</main>
-      <footer>
-        <p>&copy; 2024 ${config.name}</p>
-      </footer>
-    </body>
-  </html>
-}`,
-      "components/Button.s4ft": `component Button {
-  <button 
-    className="btn btn-primary"
-    onClick={props.onClick}
-  >
-    {props.children}
-  </button>
-}`,
-    },
-    blog: {
-      "app/page.s4ft": `page BlogHome {
+    blog: `page Blog {
   state {
-    posts: array = []
+    posts: array = [
+      { id: 1, title: "Primeiro Post", content: "Conteúdo do post..." },
+      { id: 2, title: "Segundo Post", content: "Mais conteúdo..." }
+    ]
   }
   
-  event async loadPosts() {
-    const response = await fetch('/api/posts')
-    posts = await response.json()
+  <div className="container mx-auto px-4 py-8">
+    <h1 className="text-3xl font-bold mb-8">Meu Blog</h1>
+    {posts.map(post => (
+      <article key={post.id} className="mb-6 p-4 border rounded">
+        <h2 className="text-xl font-semibold">{post.title}</h2>
+        <p>{post.content}</p>
+      </article>
+    ))}
+  </div>
+}`,
+    ecommerce: `page Store {
+  state {
+    products: array = [
+      { id: 1, name: "Produto 1", price: 99.90 },
+      { id: 2, name: "Produto 2", price: 149.90 }
+    ]
   }
   
-  <div className="blog-home">
-    <h1>Meu Blog</h1>
-    <div className="posts-grid">
-      {posts.map(post => (
-        <article key={post.id}>
-          <h2>{post.title}</h2>
-          <p>{post.excerpt}</p>
-          <a href={"/posts/" + post.slug}>Ler mais</a>
-        </article>
+  <div className="container mx-auto px-4 py-8">
+    <h1 className="text-3xl font-bold mb-8">Minha Loja</h1>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {products.map(product => (
+        <div key={product.id} className="border rounded p-4">
+          <h3 className="font-semibold">{product.name}</h3>
+          <p className="text-green-600">R$ {product.price}</p>
+          <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
+            Comprar
+          </button>
+        </div>
       ))}
     </div>
   </div>
 }`,
-      "app/posts/[slug]/page.s4ft": `page BlogPost {
+    dashboard: `page Dashboard {
   state {
-    post: object = null,
-    loading: boolean = true
+    stats: object = {
+      users: 1250,
+      sales: 89500,
+      orders: 342
+    }
   }
   
-  event async loadPost() {
-    const response = await fetch("/api/posts/" + params.slug)
-    post = await response.json()
-    loading = false
-  }
-  
-  <div className="blog-post">
-    {loading ? (
-      <p>Carregando...</p>
-    ) : (
-      <article>
-        <h1>{post.title}</h1>
-        <div className="content" dangerouslySetInnerHTML={{__html: post.content}} />
-      </article>
-    )}
+  <div className="min-h-screen bg-gray-100">
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded shadow">
+          <h3 className="text-lg font-semibold">Usuários</h3>
+          <p className="text-2xl font-bold text-blue-600">{stats.users}</p>
+        </div>
+        <div className="bg-white p-6 rounded shadow">
+          <h3 className="text-lg font-semibold">Vendas</h3>
+          <p className="text-2xl font-bold text-green-600">R$ {stats.sales}</p>
+        </div>
+        <div className="bg-white p-6 rounded shadow">
+          <h3 className="text-lg font-semibold">Pedidos</h3>
+          <p className="text-2xl font-bold text-purple-600">{stats.orders}</p>
+        </div>
+      </div>
+    </div>
   </div>
 }`,
-    },
   }
 
-  const templateFiles = templates[config.template] || templates.basic
-
-  for (const [filePath, content] of Object.entries(templateFiles)) {
-    const fullPath = path.join(projectPath, filePath)
-    await fs.ensureDir(path.dirname(fullPath))
-    await fs.writeFile(fullPath, content)
-  }
-
-  // Criar arquivo de estilos
-  const stylesContent = `/* Estilos globais do ${config.name} */
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-
-.home-page {
-  @apply container mx-auto px-4 py-8 text-center;
-}
-
-.btn {
-  @apply px-4 py-2 rounded font-medium transition-colors;
-}
-
-.btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700;
-}`
-
-  await fs.writeFile(path.join(projectPath, "styles/globals.css"), stylesContent)
+  return templates[template as keyof typeof templates] || templates.basic
 }
