@@ -1,53 +1,71 @@
 import fs from "fs-extra"
 import path from "path"
 import chalk from "chalk"
+import { parseS4FT } from "../parser/parser.js"
 import { transpileS4FT } from "../transpiler/transpiler.js"
 
-export async function buildProject(): Promise<void> {
+export async function buildProject() {
   console.log(chalk.blue("📦 Iniciando build do projeto S4FT..."))
 
-  const srcDir = path.join(process.cwd(), "app")
-  const distDir = path.join(process.cwd(), "dist")
+  const buildDir = path.join(process.cwd(), "dist")
+  await fs.ensureDir(buildDir)
 
-  // Limpar diretório de saída
-  await fs.remove(distDir)
-  await fs.ensureDir(distDir)
+  // Limpar diretório de build
+  await fs.emptyDir(buildDir)
 
   // Encontrar todos os arquivos .s4ft
-  const s4ftFiles = await findS4FTFiles(srcDir)
+  const s4ftFiles = await findS4FTFiles()
 
-  console.log(chalk.yellow(`📄 Encontrados ${s4ftFiles.length} arquivos .s4ft`))
+  console.log(chalk.cyan(`📄 Encontrados ${s4ftFiles.length} arquivos .s4ft`))
 
   // Transpilar cada arquivo
-  for (const file of s4ftFiles) {
-    await transpileFile(file, srcDir, distDir)
+  for (const filePath of s4ftFiles) {
+    try {
+      await transpileFile(filePath, buildDir)
+      console.log(chalk.green(`✅ ${filePath}`))
+    } catch (error) {
+      console.error(chalk.red(`❌ Erro em ${filePath}:`), error)
+    }
   }
 
   // Copiar arquivos estáticos
-  await copyStaticFiles()
+  await copyStaticFiles(buildDir)
 
-  // Gerar HTML de produção
-  await generateHTML(distDir)
+  // Gerar package.json para build
+  await generateBuildPackageJson(buildDir)
 
-  console.log(chalk.green.bold("✅ Build concluído com sucesso!"))
-  console.log(chalk.cyan(`📁 Arquivos gerados em: ${distDir}`))
+  console.log(chalk.green.bold("✅ Build concluído!"))
+  console.log(chalk.cyan(`📁 Arquivos gerados em: ${buildDir}`))
 }
 
-async function findS4FTFiles(dir: string): Promise<string[]> {
+async function findS4FTFiles(): Promise<string[]> {
   const files: string[] = []
 
-  if (!(await fs.pathExists(dir))) {
-    return files
+  const searchDirs = ["app", "components", "pages"]
+
+  for (const dir of searchDirs) {
+    const dirPath = path.join(process.cwd(), dir)
+    if (await fs.pathExists(dirPath)) {
+      const dirFiles = await findFilesRecursive(dirPath, ".s4ft")
+      files.push(...dirFiles)
+    }
   }
 
-  const entries = await fs.readdir(dir, { withFileTypes: true })
+  return files
+}
 
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name)
+async function findFilesRecursive(dir: string, extension: string): Promise<string[]> {
+  const files: string[] = []
+  const items = await fs.readdir(dir)
 
-    if (entry.isDirectory()) {
-      files.push(...(await findS4FTFiles(fullPath)))
-    } else if (entry.name.endsWith(".s4ft")) {
+  for (const item of items) {
+    const fullPath = path.join(dir, item)
+    const stat = await fs.stat(fullPath)
+
+    if (stat.isDirectory()) {
+      const subFiles = await findFilesRecursive(fullPath, extension)
+      files.push(...subFiles)
+    } else if (item.endsWith(extension)) {
       files.push(fullPath)
     }
   }
@@ -55,51 +73,67 @@ async function findS4FTFiles(dir: string): Promise<string[]> {
   return files
 }
 
-async function transpileFile(filePath: string, srcDir: string, distDir: string): Promise<void> {
-  try {
-    const content = await fs.readFile(filePath, "utf-8")
-    const transpiled = transpileS4FT(content)
+async function transpileFile(filePath: string, buildDir: string) {
+  const content = await fs.readFile(filePath, "utf-8")
+  const ast = parseS4FT(content)
+  const reactCode = transpileS4FT(ast)
 
-    const relativePath = path.relative(srcDir, filePath)
-    const outputPath = path.join(distDir, relativePath.replace(".s4ft", ".js"))
+  // Determinar caminho de saída
+  const relativePath = path.relative(process.cwd(), filePath)
+  const outputPath = path.join(buildDir, relativePath.replace(".s4ft", ".tsx"))
 
-    await fs.ensureDir(path.dirname(outputPath))
-    await fs.writeFile(outputPath, transpiled)
+  // Garantir que o diretório existe
+  await fs.ensureDir(path.dirname(outputPath))
 
-    console.log(chalk.green(`✅ ${relativePath} → ${path.relative(process.cwd(), outputPath)}`))
-  } catch (error) {
-    console.error(chalk.red(`❌ Erro ao transpilar ${filePath}:`), error)
-    throw error
+  // Escrever arquivo transpilado
+  await fs.writeFile(outputPath, reactCode)
+}
+
+async function copyStaticFiles(buildDir: string) {
+  const staticDirs = ["public", "assets", "styles"]
+
+  for (const dir of staticDirs) {
+    const srcPath = path.join(process.cwd(), dir)
+    const destPath = path.join(buildDir, dir)
+
+    if (await fs.pathExists(srcPath)) {
+      await fs.copy(srcPath, destPath)
+      console.log(chalk.gray(`📁 Copiado: ${dir}/`))
+    }
+  }
+
+  // Copiar arquivos de configuração importantes
+  const configFiles = ["package.json", "tsconfig.json", "tailwind.config.js", "s4ft.config.ts"]
+
+  for (const file of configFiles) {
+    const srcPath = path.join(process.cwd(), file)
+    const destPath = path.join(buildDir, file)
+
+    if (await fs.pathExists(srcPath)) {
+      await fs.copy(srcPath, destPath)
+      console.log(chalk.gray(`📄 Copiado: ${file}`))
+    }
   }
 }
 
-async function copyStaticFiles(): Promise<void> {
-  const publicDir = path.join(process.cwd(), "public")
-  const distPublicDir = path.join(process.cwd(), "dist", "public")
+async function generateBuildPackageJson(buildDir: string) {
+  const originalPackageJson = await fs.readJson(path.join(process.cwd(), "package.json"))
 
-  if (await fs.pathExists(publicDir)) {
-    await fs.copy(publicDir, distPublicDir)
-    console.log(chalk.green("✅ Arquivos estáticos copiados"))
+  const buildPackageJson = {
+    ...originalPackageJson,
+    scripts: {
+      start: "next start",
+      build: "next build",
+      dev: "next dev",
+    },
+    devDependencies: {
+      ...originalPackageJson.devDependencies,
+      next: "^14.0.0",
+      react: "^18.0.0",
+      "react-dom": "^18.0.0",
+      typescript: "^5.0.0",
+    },
   }
-}
 
-async function generateHTML(distDir: string): Promise<void> {
-  const htmlTemplate = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>S4FT App</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-</head>
-<body>
-  <div id="root"></div>
-  <script src="./page.js"></script>
-</body>
-</html>`
-
-  await fs.writeFile(path.join(distDir, "index.html"), htmlTemplate)
-  console.log(chalk.green("✅ HTML de produção gerado"))
+  await fs.writeJson(path.join(buildDir, "package.json"), buildPackageJson, { spaces: 2 })
 }

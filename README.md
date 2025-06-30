@@ -1,74 +1,104 @@
 # 🇧🇷 S4FT Framework
 
-**Simple And Fast Templates** - O primeiro framework web brasileiro focado em simplicidade e performance.
+**Simple And Fast Templates** - Framework web brasileiro com IA integrada
 
 [![npm version](https://badge.fury.io/js/s4ft-framework.svg)](https://badge.fury.io/js/s4ft-framework)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.gg/s4ft)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![AI Powered](https://img.shields.io/badge/AI-Powered-purple)](https://s4ft.dev)
 
-## 🚀 Características
+## 🚀 O que é o S4FT?
 
-- **🎯 Sintaxe Declarativa** - Escreva menos, faça mais
-- **⚡ Performance Extrema** - Bundles mínimos, carregamento instantâneo
-- **🔥 Hot Reload** - Desenvolvimento ultrarrápido
-- **🌐 SSR/SSG Nativo** - Server-side rendering automático
-- **📱 PWA Ready** - Progressive Web Apps por padrão
-- **🤖 IA Integrada** - Assistente powered by Grok
-- **🇧🇷 Brasileiro** - Documentação e suporte em português
+S4FT é um framework web brasileiro que combina a simplicidade do desenvolvimento moderno com o poder da inteligência artificial. Criado para desenvolvedores brasileiros, oferece uma sintaxe intuitiva e ferramentas de IA integradas.
+
+### ✨ Principais características
+
+- 🇧🇷 **100% em português** - CLI e documentação brasileira
+- 🤖 **IA integrada** - Groq, Grok, Fal e Deep Infra
+- ⚡ **Zero configuração** - Funciona imediatamente
+- 🎨 **Templates profissionais** - Prontos para produção
+- 🔧 **Sintaxe simples** - Fácil de aprender e usar
+- 📦 **Componentes reativos** - Estado automático
+- 🚀 **Deploy facilitado** - Múltiplas plataformas
 
 ## 📦 Instalação
 
 \`\`\`bash
-# Instalar globalmente
 npm install -g s4ft-framework
-
-# Ou usar npx
-npx s4ft-framework create meu-projeto
 \`\`\`
 
-## 🎯 Início Rápido
+## 🎯 Início rápido
+
+### Criar projeto
 
 \`\`\`bash
-# Criar novo projeto (modo interativo)
-s4ft create
+# Modo interativo (recomendado)
+s4ft interactive
 
-# Ou criar diretamente
-s4ft create meu-app --template basic --language pt-br
+# Projeto básico
+s4ft create meu-app
 
-# Entrar no diretório
+# Com template específico
+s4ft create meu-blog --template blog --features auth,database,i18n
+\`\`\`
+
+### Desenvolvimento
+
+\`\`\`bash
 cd meu-app
-
-# Instalar dependências
-npm install
-
-# Iniciar desenvolvimento
 s4ft dev
 \`\`\`
 
-## 📝 Sintaxe S4FT
+### Gerar código com IA
 
-### Componentes
+\`\`\`bash
+# Conversar com assistente
+s4ft ai chat
+
+# Gerar componente
+s4ft ai generate component "botão com loading e ícone"
+
+# Gerar página
+s4ft ai generate page "dashboard com gráficos"
+
+# Gerar imagem
+s4ft ai image "logo moderno para startup" --save
+\`\`\`
+
+## 🎨 Sintaxe S4FT
+
+### Componente simples
 
 ```s4ft
-component MeuComponente {
-  props {
-    titulo: string = "Título padrão",
-    ativo: boolean = false
-  }
-  
+component Contador(props: { inicial: number }) {
   state {
-    contador: number = 0
+    count: number = props.inicial
   }
   
   event incrementar() {
-    contador = contador + 1
+    count = count + 1
   }
   
-  <div className="meu-componente">
-    <h2>{titulo}</h2>
-    <p>Contador: {contador}</p>
-    <button onClick={incrementar} disabled={!ativo}>
-      Incrementar
-    </button>
+  event decrementar() {
+    count = count - 1
+  }
+  
+  <div className="p-4 bg-white rounded-lg shadow">
+    <h2 className="text-xl font-bold mb-4">Contador</h2>
+    <div className="flex items-center gap-4">
+      <button 
+        onClick={decrementar}
+        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+      >
+        -
+      </button>
+      <span className="text-2xl font-mono">{count}</span>
+      <button 
+        onClick={incrementar}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        +
+      </button>
+    </div>
   </div>
 }
