@@ -297,7 +297,7 @@ Basta criar arquivos com colchetes, ex: `app/posts/[id].s4ft`.
 
 ## 🚀 Casos de Uso / Projetos em Produção
 
-- [Portfólio de João Dev](https://portfolio-marcos-dresbach.s4ft.fun)
+- [Portfólio Marcos Dresbach](https://portfolio-marcos-dresbach.s4ft.fun)
 - [Landing Page Startup X](https://startupx.s4ft.fun)
 - [API de Produtos Demo](https://api-produtos-demo.s4ft.fun)
 - [Blog Tech Brasil](https://blogtechbrasil.s4ft.fun)
