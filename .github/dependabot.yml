@@ -1,0 +1,10 @@
+# .github/dependabot.yml
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/" # Diretório onde está o package.json
+    schedule:
+      interval: "weekly" # Atualizações semanais
+    open-pull-requests-limit: 5
+    rebase-strategy: "auto"
