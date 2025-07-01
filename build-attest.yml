@@ -1,0 +1,27 @@
+name: build-attest
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Build do projeto
+        run: npm run build
+
+      - name: Atestar artefato de build
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'dist/**'
