@@ -376,7 +376,7 @@ class DevServer {
             onRender: (fn) => renderHooks.push(fn),
             // ...outros hooks
         };
-        for (const plugin of config.plugins) {
+        for (const plugin of Array.isArray(config.plugins) ? config.plugins : []) {
             let mod = plugin;
             if (typeof plugin === "string") {
                 mod = require(plugin); // carrega do node_modules
