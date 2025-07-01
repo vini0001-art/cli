@@ -1,0 +1,251 @@
+// Exemplo completo de uma aplicação S4FT
+// Este arquivo demonstra todas as funcionalidades do framework
+
+// Importações (se necessário)
+import { Button } from '../components/Button.s4ft'
+
+// Página principal da aplicação
+page TodoApp {
+  // Estado da aplicação
+  state {
+    todos: array = [],
+    newTodo: string = "",
+    filter: string = "all",
+    loading: boolean = false
+  }
+  
+  // Computed values (calculados automaticamente)
+  computed {
+    filteredTodos: computed(() => {
+      switch (filter) {
+        case 'active':
+          return todos.filter(todo => !todo.completed)
+        case 'completed':
+          return todos.filter(todo => todo.completed)
+        default:
+          return todos
+      }
+    }),
+    
+    remainingCount: computed(() => {
+      return todos.filter(todo => !todo.completed).length
+    })
+  }
+  
+  // Eventos/handlers
+  event addTodo() {
+    if (newTodo.trim()) {
+      todos = [...todos, {
+        id: Date.now(),
+        text: newTodo.trim(),
+        completed: false,
+        createdAt: new Date()
+      }]
+      newTodo = ""
+    }
+  }
+  
+  event toggleTodo(id: number) {
+    todos = todos.map(todo =>
+      todo.id === id 
+        ? { ...todo, completed: !todo.completed }
+        : todo
+    )
+  }
+  
+  event deleteTodo(id: number) {
+    todos = todos.filter(todo => todo.id !== id)
+  }
+  
+  event clearCompleted() {
+    todos = todos.filter(todo => !todo.completed)
+  }
+  
+  event setFilter(newFilter: string) {
+    filter = newFilter
+  }
+  
+  // Lifecycle (se necessário)
+  onMount() {
+    // Carregar todos do localStorage
+    const savedTodos = localStorage.getItem('s4ft-todos')
+    if (savedTodos) {
+      todos = JSON.parse(savedTodos)
+    }
+  }
+  
+  onUpdate() {
+    // Salvar todos no localStorage
+    localStorage.setItem('s4ft-todos', JSON.stringify(todos))
+  }
+  
+  // JSX da página
+  <div className="todo-app">
+    <header className="header">
+      <h1>S4FT Todo App</h1>
+      <div className="input-container">
+        <input
+          type="text"
+          placeholder="O que precisa ser feito?"
+          value={newTodo}
+          onChange={(e) => newTodo = e.target.value}
+          onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+          className="new-todo"
+        />
+        <Button 
+          text="Adicionar"
+          onClick={addTodo}
+          disabled={!newTodo.trim()}
+          variant="primary"
+        />
+      </div>
+    </header>
+    
+    {todos.length > 0 && (
+      <main className="main">
+        <ul className="todo-list">
+          {filteredTodos.map(todo => (
+            <li 
+              key={todo.id} 
+              className={`todo-item ${todo.completed ? 'completed' : ''}`}
+            >
+              <div className="view">
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => toggleTodo(todo.id)}
+                  className="toggle"
+                />
+                <label>{todo.text}</label>
+                <button 
+                  onClick={() => deleteTodo(todo.id)}
+                  className="destroy"
+                >
+                  ×
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+        
+        <footer className="footer">
+          <span className="todo-count">
+            {remainingCount} {remainingCount === 1 ? 'item' : 'itens'} restante{remainingCount !== 1 ? 's' : ''}
+          </span>
+          
+          <div className="filters">
+            <button 
+              className={filter === 'all' ? 'selected' : ''}
+              onClick={() => setFilter('all')}
+            >
+              Todos
+            </button>
+            <button 
+              className={filter === 'active' ? 'selected' : ''}
+              onClick={() => setFilter('active')}
+            >
+              Ativos
+            </button>
+            <button 
+              className={filter === 'completed' ? 'selected' : ''}
+              onClick={() => setFilter('completed')}
+            >
+              Concluídos
+            </button>
+          </div>
+          
+          {todos.some(todo => todo.completed) && (
+            <button 
+              onClick={clearCompleted}
+              className="clear-completed"
+            >
+              Limpar concluídos
+            </button>
+          )}
+        </footer>
+      </main>
+    )}
+    
+    {todos.length === 0 && (
+      <div className="empty-state">
+        <p>Nenhuma tarefa ainda. Adicione uma acima! 👆</p>
+      </div>
+    )}
+  </div>
+}
+
+// Estilos (opcional, pode ser em arquivo separado)
+<style>
+.todo-app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.header h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.input-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.new-todo {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.todo-item.completed label {
+  text-decoration: line-through;
+  color: #95a5a6;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 1px solid #e1e8ed;
+}
+
+.filters button {
+  margin: 0 0.25rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+}
+
+.filters button.selected {
+  border-color: #3498db;
+  background: #3498db;
+  color: white;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #7f8c8d;
+}
+</style>

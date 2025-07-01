@@ -1,0 +1,47 @@
+// API route example
+import { users } from "../../data/users";
+
+export function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const limit = searchParams.get('limit') || 10;
+  
+  return {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: {
+      users: users.slice(0, limit),
+      total: users.length
+    }
+  };
+}
+
+export function POST(request) {
+  const newUser = request.body;
+  
+  // Validate user data
+  if (!newUser.name || !newUser.email) {
+    return {
+      status: 400,
+      body: {
+        error: "Name and email are required"
+      }
+    };
+  }
+  
+  // Add user (in real app, save to database)
+  const user = {
+    id: Date.now(),
+    ...newUser,
+    createdAt: new Date().toISOString()
+  };
+  
+  return {
+    status: 201,
+    body: {
+      message: "User created successfully",
+      user
+    }
+  };
+}

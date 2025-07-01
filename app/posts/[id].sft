@@ -1,0 +1,47 @@
+// Página dinâmica de exemplo para /posts/[id]
+
+page PostPage {
+  props {
+    id: string
+  }
+
+  state {
+    post: { title?: string, content?: string } = {}
+    loading: boolean = true
+    error: string = ""
+  }
+
+  onMount() {
+    fetch(`/api/posts/${id}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Erro ao buscar post")
+        return res.json()
+      })
+      .then(data => {
+        post = data
+        loading = false
+      })
+      .catch(e => {
+        error = e.message
+        loading = false
+      })
+  }
+
+  <div>
+    <h1>Post: {id}</h1>
+    {loading && <div>Carregando...</div>}
+    {error && <div style="color:red;">Erro: {error}</div>}
+    {!loading && !error && (
+      <div>
+        <div>
+          <b>Título:</b> {post.title}
+        </div>
+        <div>
+          <b>Conteúdo:</b> {post.content}
+        </div>
+      </div>
+    )}
+  </div>
+}
+
+export PostPage;

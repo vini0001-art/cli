@@ -1,0 +1,83 @@
+page HomePage {
+  state {
+    count: number = 0,
+    message: string = "Welcome to S4FT!",
+    todos: array = []
+  }
+  
+  event incrementCount() {
+    setCount(count + 1)
+  }
+  
+  event addTodo(text: string) {
+    setTodos([...todos, { id: Date.now(), text, completed: false }])
+  }
+  
+  <div className="home-container min-h-screen bg-gradient-to-br from-blue-400 to-purple-500">
+    <header className="text-center py-12">
+      <h1 className="text-5xl font-bold text-white mb-4">{message}</h1>
+      <p className="text-xl text-blue-100">A declarative web framework inspired by Next.js</p>
+    </header>
+    
+    <main className="max-w-4xl mx-auto px-4 pb-12">
+      <section className="bg-white rounded-lg shadow-xl p-8 mb-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Counter Example</h2>
+        <p className="text-xl text-gray-600 mb-4">Current count: {count}</p>
+        <button 
+          onClick={incrementCount}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+        >
+          Increment
+        </button>
+      </section>
+      
+      <section className="bg-white rounded-lg shadow-xl p-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">S4FT Features</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex items-start space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+            <div>
+              <h3 className="font-semibold text-gray-800">Declarative component syntax</h3>
+              <p className="text-gray-600 text-sm">Write components with intuitive S4FT syntax</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+            <div>
+              <h3 className="font-semibold text-gray-800">Built-in state management</h3>
+              <p className="text-gray-600 text-sm">Manage state without external libraries</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+            <div>
+              <h3 className="font-semibold text-gray-800">File-based routing</h3>
+              <p className="text-gray-600 text-sm">Automatic routing based on file structure</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+            <div>
+              <h3 className="font-semibold text-gray-800">Hot reload development</h3>
+              <p className="text-gray-600 text-sm">See changes instantly during development</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+            <div>
+              <h3 className="font-semibold text-gray-800">Production-ready builds</h3>
+              <p className="text-gray-600 text-sm">Optimized builds for deployment</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+            <div>
+              <h3 className="font-semibold text-gray-800">TypeScript support</h3>
+              <p className="text-gray-600 text-sm">Full TypeScript integration out of the box</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+}

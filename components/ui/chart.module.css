@@ -1,0 +1,12 @@
+.chart-tooltip-indicator {
+  border-radius: 2px;
+  border: 1px solid var(--indicator-color, #ccc);
+  background: var(--indicator-color, #ccc);
+}
+.chart-tooltip-indicator[data-indicator-color] {
+  --indicator-color: attr(data-indicator-color color, #ccc);
+}
+.chart-indicator {
+  background-color: var(--color-bg);
+  border-color: var(--color-border);
+}

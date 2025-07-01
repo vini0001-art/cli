@@ -1,0 +1,37 @@
+// About page demonstrating routing
+page AboutPage {
+  state {
+    teamMembers: array = [
+      { name: "Alice", role: "Frontend Developer" },
+      { name: "Bob", role: "Backend Developer" },
+      { name: "Charlie", role: "Designer" }
+    ]
+  }
+  
+  <div className="about-container">
+    <h1>About s4ft</h1>
+    
+    <section>
+      <h2>What is s4ft?</h2>
+      <p>
+        s4ft (Simple And Fast Templates) is a declarative web development 
+        framework inspired by Next.js. It provides a clean, intuitive syntax 
+        for building modern web applications.
+      </p>
+    </section>
+    
+    <section>
+      <h2>Our Team</h2>
+      <div className="team-grid">
+        {for (member in teamMembers) {
+          <div className="team-member">
+            <h3>{member.name}</h3>
+            <p>{member.role}</p>
+          </div>
+        }}
+      </div>
+    </section>
+  </div>
+}
+
+export AboutPage;

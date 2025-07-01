@@ -1,0 +1,37 @@
+.chart-indicator {
+  display: inline-block;
+  border-radius: 2px;
+  border: 1px solid var(--color-border, #ccc);
+  background: var(--color-bg, #ccc);
+  vertical-align: middle;
+}
+.chart-indicator-dot {
+  width: 1rem;
+  height: 1rem;
+}
+.chart-indicator-line {
+  width: 0.25rem;
+  height: 1rem;
+}
+.chart-indicator-dashed {
+  width: 0;
+  height: 1rem;
+  border-left: 1.5px dashed var(--color-border, #ccc);
+  background: transparent;
+}
+.chart-indicator-dashed-nest {
+  margin-top: 0.125rem;
+  margin-bottom: 0.125rem;
+}
+.chart-indicator-custom {
+  /* Use apenas variáveis CSS, sem attr() */
+  background-color: var(--color-bg, #ccc);
+  border-color: var(--color-border, #ccc);
+}
+.chart-indicator-legend {
+  background-color: var(--legend-color, #ccc);
+}
+.chart-indicator-legend[data-color] {
+  /* Para navegadores modernos, use style via JS para definir --legend-color */
+  background-color: attr(data-color color, #ccc);
+}
