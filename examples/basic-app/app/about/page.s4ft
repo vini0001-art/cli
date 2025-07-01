@@ -23,7 +23,7 @@ page AboutPage {
     <section>
       <h2>Our Team</h2>
       <div className="team-grid">
-        {for (member in teamMembers) {
+        {for (member of teamMembers) {
           <div className="team-member">
             <h3>{member.name}</h3>
             <p>{member.role}</p>
