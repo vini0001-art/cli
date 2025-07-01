@@ -5,65 +5,33 @@ import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = {
-  title: "S4FT Framework - Simple And Fast Templates",
-  description:
-    "Framework brasileiro para desenvolvimento web moderno com IA integrada e arquitetura de ilhas. Simples, rápido e poderoso.",
-  keywords: [
-    "s4ft",
-    "framework",
-    "javascript",
-    "typescript",
-    "react",
-    "nextjs",
-    "web development",
-    "brazilian framework",
-    "islands architecture",
-    "ai assistant",
-  ],
-  authors: [{ name: "S4FT Team", url: "https://s4ft.fun" }],
-  creator: "S4FT Team",
-  publisher: "S4FT Framework",
+export const metadata = {
+  metadataBase: new URL('https://www.sua-url.com'),
+  title: 'S4FT App',
+  description: 'Aplicação criada com o S4FT Framework. Simples, rápida e moderna para web.',
   openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    url: "https://s4ft.fun",
-    title: "S4FT Framework - Simple And Fast Templates",
-    description: "Framework brasileiro para desenvolvimento web moderno com IA integrada e arquitetura de ilhas.",
-    siteName: "S4FT Framework",
+    title: 'S4FT App',
+    description: 'Aplicação criada com o S4FT Framework. Simples, rápida e moderna para web.',
+    url: 'https://www.sua-url.com',
+    siteName: 'S4FT App',
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "S4FT Framework",
-      },
+        url: '/placeholder-logo.png',
+        width: 800,
+        height: 600,
+        alt: 'Logo S4FT'
+      }
     ],
+    locale: 'pt_BR',
+    type: 'website'
   },
   twitter: {
-    card: "summary_large_image",
-    title: "S4FT Framework - Simple And Fast Templates",
-    description: "Framework brasileiro para desenvolvimento web moderno com IA integrada e arquitetura de ilhas.",
-    images: ["/og-image.png"],
-    creator: "@s4ft_framework",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  verification: {
-    google: "your-google-verification-code",
-    yandex: "your-yandex-verification-code",
-  },
-    generator: 'v0.dev'
-}
+    card: 'summary_large_image',
+    title: 'S4FT App',
+    description: 'Aplicação criada com o S4FT Framework.',
+    images: ['/placeholder-logo.png']
+  }
+};
 
 export default function RootLayout({
   children,
@@ -76,8 +44,18 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#3b82f6" />
+        <meta name="theme-color" content="#0ea5e9" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Aplicação criada com o S4FT Framework. Simples, rápida e moderna para web." />
+        <meta property="og:title" content="S4FT App" />
+        <meta property="og:description" content="Aplicação criada com o S4FT Framework. Simples, rápida e moderna para web." />
+        <meta property="og:image" content="/placeholder-logo.png" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="S4FT App" />
+        <meta name="twitter:description" content="Aplicação criada com o S4FT Framework." />
+        <meta name="twitter:image" content="/placeholder-logo.png" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
