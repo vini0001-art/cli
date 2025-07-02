@@ -4,7 +4,7 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker } from "react-day-picker"
 
-import { cn } from "@/s4ft-serv/lib/utils"
+import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
@@ -30,7 +30,7 @@ function Calendar({
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
         ),
         nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
+        // nav_button_s4ft: "absolute right-1", // Removido: propriedade não existe em react-day-picker
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
         head_cell:

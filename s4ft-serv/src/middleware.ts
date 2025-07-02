@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from "express"
+import type { Request, Response } from "express"
 import chalk from "chalk"
 
 interface S4FTRequest extends Request {
@@ -9,7 +9,7 @@ interface S4FTRequest extends Request {
 }
 
 // Middleware de logging
-export function loggingMiddleware(req: S4FTRequest, res: Response, next: NextFunction) {
+export function loggingMiddleware(req: S4FTRequest, res: Response, next: () => void) {
   const startTime = Date.now()
   const requestId = Math.random().toString(36).substr(2, 9)
 
@@ -33,7 +33,7 @@ export function loggingMiddleware(req: S4FTRequest, res: Response, next: NextFun
 }
 
 // Middleware de CORS
-export function corsMiddleware(req: Request, res: Response, next: NextFunction) {
+export function corsMiddleware(req: Request, res: Response, next: () => void) {
   res.header("Access-Control-Allow-Origin", "*")
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
@@ -46,7 +46,7 @@ export function corsMiddleware(req: Request, res: Response, next: NextFunction) 
 }
 
 // Middleware de parsing JSON
-export function jsonMiddleware(req: Request, res: Response, next: NextFunction) {
+export function jsonMiddleware(req: Request, res: Response, next: () => void) {
   if (req.headers["content-type"]?.includes("application/json")) {
     let body = ""
 
@@ -58,6 +58,7 @@ export function jsonMiddleware(req: Request, res: Response, next: NextFunction) 
       try {
         req.body = JSON.parse(body)
         next()
+      next()
       } catch (error) {
         res.status(400).json({ error: "Invalid JSON" })
       }
@@ -68,7 +69,7 @@ export function jsonMiddleware(req: Request, res: Response, next: NextFunction) 
 }
 
 // Middleware de tratamento de erros
-export function errorMiddleware(error: Error, req: Request, res: Response, next: NextFunction) {
+export function errorMiddleware(error: Error, req: Request, res: Response, next: () => void) {
   console.error(chalk.red("Error:"), error.message)
   console.error(error.stack)
 
@@ -79,7 +80,7 @@ export function errorMiddleware(error: Error, req: Request, res: Response, next:
 }
 
 // Middleware principal que combina todos
-export default function middleware(req: S4FTRequest, res: Response, next: NextFunction) {
+export default function middleware(req: S4FTRequest, res: Response, next: () => void) {
   // Aplicar middlewares em sequência
   loggingMiddleware(req, res, () => {
     corsMiddleware(req, res, () => {

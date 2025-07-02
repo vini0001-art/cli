@@ -1,0 +1,14 @@
+component HomePage {
+  props {}
+  state {}
+  <div className="home-page" style="max-width:600px;margin:40px auto;text-align:center;">
+    <img src="/placeholder-logo.svg" alt="Logo S4FT" style="max-width:180px;display:block;margin:0 auto 24px;" />
+    <h1>Bem-vindo ao S4FT 🚀</h1>
+    <p style="font-size:1.1em;margin:16px 0 8px;">📚 Documentação: <a href="https://www.s4ft.fun/docs" target="_blank">https://www.s4ft.fun/docs</a></p>
+    <p style="font-size:1.2em;font-weight:bold;margin:24px 0 8px;">Parabéns! Seu servidor S4FT está rodando.</p>
+    <p>Você faz parte de uma nova geração de desenvolvedores brasileiros.</p>
+    <p style="margin-top:24px;">Você não está sozinho! Se precisar de ajuda, visite nosso site.<br />
+    Venha contribuir e tornar realidade essa mudança no desenvolvimento web nacional!<br />
+    <a href="https://www.s4ft.fun" target="_blank">www.s4ft.fun</a></p>
+  </div>
+}

@@ -64,7 +64,7 @@ export class Lexer {
     const tokens: Token[] = []
 
     while (this.position < this.input.length) {
-      const token = this.nextToken()
+      const token = this.s4ftToken()
       if (token.type !== TokenType.WHITESPACE) {
         tokens.push(token)
       }
@@ -80,7 +80,7 @@ export class Lexer {
     return tokens
   }
 
-  public nextToken(): Token {
+  public s4ftToken(): Token {
     this.skipWhitespace()
 
     if (this.position >= this.input.length) {

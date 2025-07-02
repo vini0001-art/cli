@@ -95,7 +95,7 @@ const config: S4FTConfig = {
   seo: {
     title: "Meu App S4FT",
     description: "A melhor aplicação feita com S4FT",
-    keywords: ["s4ft", "react", "nextjs", "framework"],
+    keywords: ["s4ft", "react", "s4ftjs", "framework"],
     author: "Seu Nome",
     image: "/og-image.png",
   },

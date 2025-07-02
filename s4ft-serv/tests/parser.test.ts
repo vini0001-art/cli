@@ -29,10 +29,10 @@ component TestComponent {
 
     const lexer = new Lexer(input)
     const tokens = []
-    let token = lexer.nextToken()
+    let token = lexer.s4ftToken()
     while (token.type !== "EOF") {
       tokens.push(token)
-      token = lexer.nextToken()
+      token = lexer.s4ftToken()
     }
     const parser = new Parser(tokens)
     const ast = parser.parse()
@@ -63,10 +63,10 @@ page HomePage {
 
     const lexer2 = new Lexer(input)
     const tokens2 = []
-    let token2 = lexer2.nextToken()
+    let token2 = lexer2.s4ftToken()
     while (token2.type !== "EOF") {
       tokens2.push(token2)
-      token2 = lexer2.nextToken()
+      token2 = lexer2.s4ftToken()
     }
     const parser = new Parser(tokens2)
     const ast = parser.parse()
@@ -87,10 +87,10 @@ describe("S4FT Lexer", () => {
     const lexer = new Lexer(input)
 
     const tokens = []
-    let token = lexer.nextToken()
+    let token = lexer.s4ftToken()
     while (token.type !== "EOF") {
       tokens.push(token)
-      token = lexer.nextToken()
+      token = lexer.s4ftToken()
     }
 
     expect(tokens).toHaveLength(6)

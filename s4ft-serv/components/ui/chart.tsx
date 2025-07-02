@@ -16,7 +16,7 @@ import {
   LegendProps,
 } from "recharts"
 import type { TooltipProps } from "recharts"
-import { cn } from "@/s4ft-serv/lib/utils"
+import { cn } from "@/lib/utils"
 import "./chart.css" // novo arquivo CSS externo
 
 // Format: { THEME_NAME: CSS_SELECTOR }

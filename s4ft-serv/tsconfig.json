@@ -3,26 +3,27 @@
     "lib": ["dom", "dom.iterable", "es6"],
     "allowJs": true,
     "skipLibCheck": true,
+    "moduleResolution": "nodenext",
     "strict": true,
-    "noEmit": true,
+    "noEmit": false,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
-        "name": "next"
+        "name": "s4ft"
       }
     ],
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@/*": ["./*"],
       "@/components/*": ["./components/*"],
-      "@/lib/*": ["s4ft-serv/lib/*"],
-      "@/app/*": ["s4ft-serv/app/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/app/*": ["./app/*"],
       "@/hooks/*": ["./hooks/*"],
       "@/styles/*": ["./styles/*"],
       "@/public/*": ["./public/*"],
@@ -34,6 +35,6 @@
     "outDir": "s4ft-serv/dist",
     "rootDir": "."
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "s4ft-serv/.next/types/**/*.tss/**/*.ts", "src/**/*"],
-  "exclude": ["node_modules", "s4ft-serv/dist", "s4ft-serv/.nexty/_/.next"]
+  "include": ["s4ft-env.d.ts", "**/*.ts", "**/*.tsx", "s4ft-serv/.s4ft/types/**/*.tss/**/*.ts", "src/**/*"],
+  "exclude": ["node_modules", "s4ft-serv/dist", "s4ft-serv/.s4fty/_/.s4ft"]
 }

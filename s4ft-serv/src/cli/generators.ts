@@ -116,10 +116,10 @@ export async function generatePage(name: string) {
 export async function generateAPI(name: string) {
   const apiPath = path.join(process.cwd(), "app", "api", `${name}.ts`)
 
-  const template = `import { NextRequest, NextResponse } from 'next/server'
+  const template = `import { s4ftRequest, s4ftResponse } from 's4ft/server'
 
 // GET /api/${name}
-export async function GET(request: NextRequest) {
+export async function GET(request: s4ftRequest) {
   try {
     // Exemplo de dados
     const data = {
@@ -132,9 +132,9 @@ export async function GET(request: NextRequest) {
       ]
     }
     
-    return NextResponse.json(data)
+    return s4ftResponse.json(data)
   } catch (error) {
-    return NextResponse.json(
+    return s4ftResponse.json(
       { error: 'Erro interno do servidor' },
       { status: 500 }
     )
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/${name}
-export async function POST(request: NextRequest) {
+export async function POST(request: s4ftRequest) {
   try {
     const body = await request.json()
     
@@ -153,9 +153,9 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     }
     
-    return NextResponse.json(result, { status: 201 })
+    return s4ftResponse.json(result, { status: 201 })
   } catch (error) {
-    return NextResponse.json(
+    return s4ftResponse.json(
       { error: 'Erro ao processar dados' },
       { status: 400 }
     )
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
 }
 
 // PUT /api/${name}
-export async function PUT(request: NextRequest) {
+export async function PUT(request: s4ftRequest) {
   try {
     const body = await request.json()
     
@@ -174,9 +174,9 @@ export async function PUT(request: NextRequest) {
       timestamp: new Date().toISOString()
     }
     
-    return NextResponse.json(result)
+    return s4ftResponse.json(result)
   } catch (error) {
-    return NextResponse.json(
+    return s4ftResponse.json(
       { error: 'Erro ao atualizar dados' },
       { status: 400 }
     )
@@ -184,13 +184,13 @@ export async function PUT(request: NextRequest) {
 }
 
 // DELETE /api/${name}
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: s4ftRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
     
     if (!id) {
-      return NextResponse.json(
+      return s4ftResponse.json(
         { error: 'ID é obrigatório' },
         { status: 400 }
       )
@@ -203,9 +203,9 @@ export async function DELETE(request: NextRequest) {
       timestamp: new Date().toISOString()
     }
     
-    return NextResponse.json(result)
+    return s4ftResponse.json(result)
   } catch (error) {
-    return NextResponse.json(
+    return s4ftResponse.json(
       { error: 'Erro ao deletar item' },
       { status: 400 }
     )

@@ -154,10 +154,22 @@ Exemplo: `app/api/users.sft`
 
 ## 🆕 Novidades da v2
 
-- Novo nome de pacote: **s4ft** (o antigo s4ft-framework está depreciado)
-- CLI mais rápida e intuitiva
-- Melhorias de performance e build
-- Documentação expandida e exemplos reais
+
+## 🆕 Novidades da versão 2.0.10
+
+- **Versão:** `2.0.10`
+- **Remoção total de dependências do Next.js**: O S4FT agora é 100% independente, sem vestígios de Next.js no build, scripts ou arquivos.
+- **Build e hot reload aprimorados**: Correções no DevServer, recarregamento instantâneo e SSR mais estável.
+- **Aliases TypeScript revisados**: Imports de componentes e UI agora funcionam com aliases (`@/components/ui/...`) sem erros.
+- **Assets estáticos padronizados**: Todos os arquivos públicos devem estar em `public/` e são servidos corretamente.
+- **Correção de erros de importação**: Todos os imports quebrados e referências antigas foram removidos ou ajustados.
+- **Documentação expandida**: Novo guia avançado em `docs/guia-avancado.md` com detalhes técnicos do core, exemplos e troubleshooting.
+- **Melhorias de performance**: Build mais rápido, SSR otimizado e menor consumo de memória.
+- **Refatoração de componentes**: UI e utilitários revisados para maior compatibilidade e facilidade de uso.
+- **Fallback de boas-vindas aprimorado**: Tela inicial mais clara e amigável para novos projetos.
+- **Pronto para produção**: Estrutura estável para projetos reais, APIs e sites completos.
+
+---
 
 ---
 
@@ -288,7 +300,7 @@ Basta criar arquivos com colchetes, ex: `app/posts/[id].s4ft`.
 | Framework    | Build Inicial | TTFB SSR | Bundle Final |
 |--------------|---------------|----------|--------------|
 | **S4FT**     | 1.2s          | 45ms     | 38kb         |
-| Next.js      | 2.8s          | 110ms    | 70kb         |
+| s4ft.js      | 2.8s          | 110ms    | 70kb         |
 | Astro        | 2.1s          | 80ms     | 42kb         |
 
 *Testes realizados em projeto padrão, Node 18, ambiente local.*

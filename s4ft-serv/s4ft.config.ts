@@ -1,4 +1,12 @@
 export interface S4FTConfig {
+  // Diretórios customizados do projeto (útil para monorepo ou estrutura separada)
+  paths?: {
+    appDir?: string
+    pagesDir?: string
+    componentsDir?: string
+    publicDir?: string
+    stylesDir?: string
+  }
   // Configurações básicas
   name?: string
   version?: string
@@ -9,7 +17,7 @@ export interface S4FTConfig {
     outDir?: string
     minify?: boolean
     sourceMaps?: boolean
-    target?: "es5" | "es2015" | "es2017" | "es2018" | "es2019" | "es2020" | "esnext"
+    target?: "es5" | "es2015" | "es2017" | "es2018" | "es2019" | "es2020" | "ess4ft"
     splitting?: boolean
     treeshaking?: boolean
   }
@@ -94,6 +102,13 @@ export interface S4FTConfig {
 
 // Configuração padrão do S4FT
 const defaultConfig: S4FTConfig = {
+  paths: {
+    appDir: "../app",
+    pagesDir: "../pages",
+    componentsDir: "../components",
+    publicDir: "../public",
+    stylesDir: "../styles"
+  },
   build: {
     outDir: "dist",
     minify: true,

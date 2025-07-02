@@ -37,12 +37,11 @@ async function generateTemplateFiles(projectPath: string, template: string, proj
     scripts: {
       dev: "s4ft dev",
       build: "s4ft build",
-      start: "next start",
-      lint: "next lint",
+      start: "s4ft start",
+      lint: "s4ft lint",
     },
     dependencies: {
       s4ft: "^1.0.0",
-      next: "^14.0.0",
       react: "^18.0.0",
       "react-dom": "^18.0.0",
       typescript: "^5.0.0",
@@ -70,19 +69,19 @@ async function generateTemplateFiles(projectPath: string, template: string, proj
       forceConsistentCasingInFileNames: true,
       noEmit: true,
       esModuleInterop: true,
-      module: "esnext",
+      module: "ess4ft",
       moduleResolution: "bundler",
       resolveJsonModule: true,
       isolatedModules: true,
       jsx: "preserve",
       incremental: true,
-      plugins: [{ name: "next" }],
+      plugins: [{ name: "s4ft" }],
       baseUrl: ".",
       paths: {
         "@/*": ["./*"],
       },
     },
-    include: ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+    include: ["s4ft-env.d.ts", "**/*.ts", "**/*.tsx", ".s4ft/types/**/*.ts"],
     exclude: ["node_modules"],
   }
 
@@ -113,40 +112,13 @@ module.exports = {
 
   await fs.writeFile(path.join(projectPath, "tailwind.config.js"), tailwindConfig)
 
-  // next.config.mjs
-  const nextConfig = `/** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
-}
-
-module.exports = nextConfig`
-
-  await fs.writeFile(path.join(projectPath, "next.config.mjs"), nextConfig)
+  // s4ft.config.mjs
+  const s4ftConfigMjs = `/** @type {{ experimental: object }} */\nconst s4ftConfig = {\n  experimental: {\n    appDir: true,\n  },\n}\n\nexport default s4ftConfig`;
+  await fs.writeFile(path.join(projectPath, "s4ft.config.mjs"), s4ftConfigMjs);
 
   // s4ft.config.ts
-  const s4ftConfig = `import { S4FTConfig } from 's4ft'
-
-const config: S4FTConfig = {
-  framework: 'next',
-  typescript: true,
-  tailwind: true,
-  hotReload: true,
-  build: {
-    outDir: 'dist',
-    minify: true,
-    sourcemap: true
-  },
-  dev: {
-    port: 3000,
-    host: 'localhost'
-  }
-}
-
-export default config`
-
-  await fs.writeFile(path.join(projectPath, "s4ft.config.ts"), s4ftConfig)
+  const s4ftConfigTs = `// Exemplo de configuração S4FT em TypeScript\nexport const config = {\n  framework: 's4ft',\n  typescript: true,\n  tailwind: true,\n  hotReload: true,\n  build: {\n    outDir: 'dist',\n    minify: true,\n    sourcemap: true\n  },\n  dev: {\n    port: 3000,\n    host: 'localhost'\n  }\n}`;
+  await fs.writeFile(path.join(projectPath, "s4ft.config.ts"), s4ftConfigTs);
 
   // Gerar arquivos específicos do template
   switch (template) {

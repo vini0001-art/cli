@@ -15,7 +15,7 @@ page AboutPage {
       <h2>What is s4ft?</h2>
       <p>
         s4ft (Simple And Fast Templates) is a declarative web development 
-        framework inspired by Next.js. It provides a clean, intuitive syntax 
+        framework inspired by s4ft.js. It provides a clean, intuitive syntax 
         for building modern web applications.
       </p>
     </section>

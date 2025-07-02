@@ -1,0 +1,26 @@
+{
+  "name": "S4FT App",
+  "short_name": "S4FT",
+  "description": "Aplicação criada com o S4FT Framework. Simples, rápida e moderna para web.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["productivity", "development", "tools"],
+  "icons": [
+    {
+      "src": "/placeholder-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/placeholder-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "lang": "pt-BR",
+  "dir": "ltr"
+}

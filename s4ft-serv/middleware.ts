@@ -1,15 +1,20 @@
-import { type NextRequest, NextResponse } from "next/server"
+// import { type s4ftRequest, s4ftResponse } from "s4ft/server"
 
-export function middleware(request: NextRequest) {
+// Ajuste: tipo genérico para request
+export function middleware(request: any) {
   // Log da requisição para debug
   if (process.env.NODE_ENV === "production") {
-    console.log(`[S4FT] ${request.method} ${request.nextUrl.pathname} - ${new Date().toISOString()}`)
+    console.log(`[S4FT] ${request.method} ${request.s4ftUrl.pathname} - ${new Date().toISOString()}`)
   } else {
     console.log(`${request.method} ${request.url}`)
   }
 
   // Criar resposta
-  const response = NextResponse.next()
+  // Substitua por sua lógica de resposta real
+  const response = {
+    headers: new Map<string, string>(),
+    setHeader: function (key: string, value: string) { this.headers.set(key, value) },
+  } as any
 
   // Headers de segurança
   response.headers.set("X-Frame-Options", "DENY")
@@ -23,12 +28,12 @@ export function middleware(request: NextRequest) {
   response.headers.set("X-Made-In", "Brazil")
 
   // CORS para desenvolvimento e S4FT API
-  if (process.env.NODE_ENV === "development" || request.nextUrl.pathname.startsWith("/s4ft-api/")) {
+  if (process.env.NODE_ENV === "development" || request.s4ftUrl.pathname.startsWith("/s4ft-api/")) {
     response.headers.set("Access-Control-Allow-Origin", "*")
     response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
     response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization")
   }
-  if (request.nextUrl.pathname.startsWith("/s4ft-api/")) {
+  if (request.s4ftUrl.pathname.startsWith("/s4ft-api/")) {
     response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-S4FT-Token")
   }
 
@@ -40,11 +45,11 @@ export const config = {
     /*
      * Match all request paths except for the ones starting with:
      * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
+     * - _s4ft/static (static files)
+     * - _s4ft/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_s4ft/static|_s4ft/image|favicon.ico).*)",
     "/s4ft-api/:path*",
   ],
 }

@@ -105,7 +105,7 @@ Componentes podem ser reutilizados importando de outros arquivos .s4ft.
     // Buscar resposta mais próxima
     const keys = Object.keys(responses)
     const match = keys.find((key) => lowerQuestion.includes(key) || key.includes(lowerQuestion))
-    response = match ? responses[match] : null
+    response = match ? responses[match] : ""
   }
 
   if (response) {

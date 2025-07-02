@@ -1,7 +1,21 @@
-/** @type {import('next').NextConfig} */
-import { resolve } from 'path';
 
-const nextConfig = {
+/** @type {import('s4ft').s4ftConfig} */
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const s4ftConfig = {
+  // Diretórios de páginas e app estão na raiz do monorepo
+  // Isso permite rodar o build mesmo com app/pages fora de s4ft-serv
+  // Veja: https://s4ftjs.org/docs/app/building-your-application/configuring/app-directory#custom-app-directory
+  // Atenção: appDir não é mais suportado no s4ft.js >=13.4 fora do root.
+  // Para builds funcionarem, a pasta 'app' precisa estar dentro de 's4ft-serv'.
+  experimental: {
+    optimizePackageImports: ['lucide-react']
+    // Removido appDir e serverComponentsExternalPackages (obsoletos)
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -13,10 +27,7 @@ const nextConfig = {
     domains: ['localhost', 's4ft.fun'],
     formats: ['image/webp', 'image/avif']
   },
-  experimental: {
-    optimizePackageImports: ['lucide-react']
-    // Removido appDir e serverComponentsExternalPackages (obsoletos)
-  },
+  // ...existing code...
   serverExternalPackages: ['@s4ft/core'], // Fora do experimental
   async headers() {
     return [
@@ -70,4 +81,4 @@ const nextConfig = {
   }
 }
 
-export default nextConfig
+export default s4ftConfig

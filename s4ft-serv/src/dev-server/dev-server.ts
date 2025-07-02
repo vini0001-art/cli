@@ -21,7 +21,7 @@ export async function startDevServer(port = 3000) {
   app.use("/assets", express.static("assets"))
 
   // Middleware para processar arquivos .s4ft
-  app.use(async (req, res, next) => {
+  app.use(async (req, res, s4ft) => {
     try {
       if (req.path.endsWith(".js") || req.path.endsWith(".tsx")) {
         const s4ftPath = req.path.replace(/\.(js|tsx)$/, ".s4ft")
@@ -38,7 +38,7 @@ export async function startDevServer(port = 3000) {
         }
       }
 
-      next()
+      s4ft()
     } catch (error) {
       console.error(chalk.red("Erro ao processar arquivo S4FT:"), error)
       res.status(500).send(`Erro de compilação: ${error}`)

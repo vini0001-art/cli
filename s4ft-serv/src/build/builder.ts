@@ -122,13 +122,13 @@ async function generateBuildPackageJson(buildDir: string) {
   const buildPackageJson = {
     ...originalPackageJson,
     scripts: {
-      start: "next start",
-      build: "next build",
-      dev: "next dev",
+      start: "s4ft start",
+      build: "s4ft build",
+      dev: "s4ft dev",
     },
     devDependencies: {
       ...originalPackageJson.devDependencies,
-      next: "^14.0.0",
+      s4ft: "^14.0.0",
       react: "^18.0.0",
       "react-dom": "^18.0.0",
       typescript: "^5.0.0",

@@ -22,7 +22,7 @@ program
     try {
         await createProject(projectName);
         spinner.succeed(chalk_1.default.green(`✅ Created project: ${projectName}`));
-        console.log("\n" + chalk_1.default.blue("Next steps:"));
+        console.log("\n" + chalk_1.default.blue("s4ft steps:"));
         console.log(chalk_1.default.gray(`  cd ${projectName}`));
         console.log(chalk_1.default.gray("  s4ft dev"));
     }

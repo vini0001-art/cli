@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { findFreePort } from "../dev-server/findFreePort"; // ajuste o caminho conforme sua estrutura
-import DevServer from "../dev-server/DevServer"; // ajuste o caminho conforme sua estrutura
+import { findFreePort } from "../dist/dev-server/findFreePort.js";
+import { DevServer } from "../dist/dev-server/dev-server.js";
 import path from "path";
 
 async function startDevServer() {

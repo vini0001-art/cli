@@ -143,7 +143,7 @@ class DevServer {
 </head>
 <body>
   <div id="root">
-    <img src="/placeholder-logo.svg" alt="Logo S4FT" class="s4ft-logo" />
+    <img src="/placeholder-logo.svg" alt="Logotipo estilizado do S4FT com cores vibrantes transmitindo inovação e tecnologia. Ambiente de boas-vindas ao servidor S4FT. Texto: S4FT" class="s4ft-logo" />
     <div class="s4ft-title">Bem-vindo ao S4FT 🚀</div>
     <div class="s4ft-docs">
       📚 <b>Documentação:</b> <a href="https://www.s4ft.fun/docs" class="s4ft-link" target="_blank">https://www.s4ft.fun/docs</a>
@@ -265,7 +265,7 @@ class DevServer {
         // Supondo que jsCode exporta um componente chamado PageComponent
         let PageComponent;
         try {
-            // eslint-disable-next-line no-eval
+            // eslint-disable-s4ft-line no-eval
             PageComponent = eval(`(function(require, module, exports){${jsCode}; return module.exports.PageComponent || module.exports.default;})`)(require, { exports: {} }, {});
         }
         catch (e) {

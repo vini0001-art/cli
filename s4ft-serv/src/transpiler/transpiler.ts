@@ -18,7 +18,7 @@ export class Transpiler {
       return this.transpileComponent(ast as ComponentNode)
     }
 
-    throw new Error(`Unknown AST node type: ${ast.type}`)
+    throw new Error(`Unknown AST node type`)
   }
 
   private transpilePage(page: PageNode): string {

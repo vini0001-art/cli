@@ -3,8 +3,8 @@
 # dependencies
 /node_modules
 
-# next.js
-/.next/
+# s4ft.js
+/.s4ft/
 /out/
 
 # production
@@ -24,4 +24,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+s4ft-env.d.ts
