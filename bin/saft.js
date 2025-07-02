@@ -12,7 +12,7 @@ async function startDevServer() {
     port
   });
   await server.start();
-  console.log(`🚀 s4ft dev server running on http://localhost:${port}`);
+  console.log(`🚀 s4ft dev servidor em execução em http://localhost:${port}`);
 }
 
 startDevServer();
