@@ -7,6 +7,7 @@ import { createServer } from "http"
 import chalk from "chalk"
 import { parseS4FT } from "../parser/parser.js"
 import { transpileS4FT } from "../transpiler/transpiler.js"
+import net from "net"
 
 export async function startDevServer(port = 3000) {
   const app = express()
@@ -181,4 +182,21 @@ function generateWelcomeHTML(): string {
 function getComponentName(reactCode: string): string {
   const match = reactCode.match(/export default function (\w+)/)
   return match ? match[1] : "App"
+}
+
+export async function findFreePort(startPort = 3000, maxPort = 3100): Promise<number> {
+  function check(port: number): Promise<boolean> {
+    return new Promise((resolve) => {
+      const server = net.createServer();
+      server.once("error", () => resolve(false));
+      server.once("listening", () => {
+        server.close(() => resolve(true));
+      });
+      server.listen(port);
+    });
+  }
+  for (let port = startPort; port <= maxPort; port++) {
+    if (await check(port)) return port;
+  }
+  throw new Error("Nenhuma porta livre encontrada no intervalo.");
 }

@@ -80,7 +80,7 @@ export class Lexer {
     return tokens
   }
 
-  private nextToken(): Token {
+  public nextToken(): Token {
     this.skipWhitespace()
 
     if (this.position >= this.input.length) {

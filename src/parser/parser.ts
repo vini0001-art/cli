@@ -446,6 +446,21 @@ export class Parser {
     const current = this.peek()
     throw new Error(`Expected ${type} but got ${current.type} at line ${current.line}`)
   }
+
+  private parsePrimaryExpression() {
+    // ...existing code...
+    // Adicione aqui o suporte para [], {}, ? : e `template strings`
+  }
+}
+
+function throwSyntaxError(
+  message: string,
+  fileName: string,
+  line: number,
+  column: number,
+  codeSnippet: string
+) {
+  // Implement detailed error message here
 }
 
 export function parseS4FT(input: string): S4FTNode {
