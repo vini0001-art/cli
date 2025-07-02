@@ -1,6 +1,8 @@
 # 🇧🇷 S4FT Framework
 
-**Simple And Fast Templates** - O primeiro framework web brasileiro focado em simplicidade e performance.
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0009--4112--912X-brightgreen?logo=orcid&logoColor=white)](https://orcid.org/0009-0009-4112-912X)
+
+**Simple And Fast Templates** (`@vini0001-art/s4ft`) — O primeiro framework web brasileiro focado em simplicidade, performance e mantido por [@vini0001-art](https://github.com/vini0001-art).
 
 [![npm version](https://badge.fury.io/js/s4ft.svg)](https://badge.fury.io/js/s4ft)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -151,8 +153,6 @@ Crie endpoints em `app/api/` usando arquivos `.sft`.
 Exemplo: `app/api/users.sft`
 
 ---
-
-## 🆕 Novidades da v2
 
 
 ## 🆕 Novidades da versão 2.0.10
