@@ -1,6 +1,6 @@
 {
   "name": "s4ft",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "scripts": {
     "build": "node ./bin/saft.js build",
     "dev": "node ./bin/saft.js dev",
