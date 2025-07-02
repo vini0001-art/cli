@@ -152,8 +152,6 @@ Exemplo: `app/api/users.sft`
 
 ---
 
-## 🆕 Novidades da v2
-
 
 ## 🆕 Novidades da versão 2.0.10
 
