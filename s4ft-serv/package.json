@@ -56,7 +56,7 @@
     "framer-motion": "^12.22.0",
     "fs-extra": "latest",
     "http": "latest",
-    "i18s4ft": "^25.3.0",
+
     "input-otp": "latest",
     "inquirer": "latest",
     "lucide-react": "^0.454.0",
