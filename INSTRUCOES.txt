@@ -1,0 +1,31 @@
+# 🛠️ Instruções de Estrutura do Projeto S4FT
+
+## Como estruturar seu projeto
+
+- Utilize a pasta `app/` para suas páginas e rotas principais (`.s4ft` ou `.sft`).
+- Coloque componentes reutilizáveis em `components/`.
+- Arquivos estáticos (imagens, ícones, etc.) devem ficar em `public/`.
+- O CSS global deve ser colocado em `styles/`.
+- A pasta `pages/` é opcional e só deve ser usada para rotas alternativas ou experimentais.
+
+## O que NÃO fazer
+
+- **NÃO** crie páginas ou componentes diretamente na raiz do projeto.
+- **NÃO** altere ou remova arquivos dentro de `s4ft-serv/`, exceto se você for um desenvolvedor do framework ou estiver criando integrações avançadas.
+- **NÃO** modifique arquivos de configuração do framework sem entender seu propósito.
+
+## Sobre a pasta `s4ft-serv/`
+
+- Esta pasta contém o core do framework, utilitários, exemplos e configurações internas.
+- **Nunca** edite arquivos em `s4ft-serv/` para criar suas páginas, componentes ou estilos personalizados.
+- Atualizações do framework podem sobrescrever alterações feitas nessa pasta.
+
+## Recomendações
+
+- Sempre mantenha seu código customizado fora de `s4ft-serv/`.
+- Consulte o README do framework para exemplos e melhores práticas.
+- Em caso de dúvida, procure a comunidade ou a documentação oficial.
+
+---
+
+Feito com S4FT Framework 🇧🇷

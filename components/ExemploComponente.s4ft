@@ -1,0 +1,9 @@
+component ExemploComponente {
+  props {
+    texto: string = "Olá, S4FT!"
+  }
+  state {}
+  <div className="exemplo-componente">
+    <span>{texto}</span>
+  </div>
+}

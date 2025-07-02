@@ -1,0 +1,8 @@
+component HomePage {
+  props {}
+  state {}
+  <div className="home-page">
+    <h1>Bem-vindo ao S4FT Framework 🚀</h1>
+    <p>Esta é sua primeira página S4FT. Edite <code>app/index.s4ft</code> para começar!</p>
+  </div>
+}
