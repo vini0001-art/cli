@@ -1,6 +1,6 @@
 # 🇧🇷 S4FT Framework
 
-**Simple And Fast Templates** - O primeiro framework web brasileiro focado em simplicidade e performance.
+**Simple And Fast Templates** (`@vini0001-art/s4ft`) — O primeiro framework web brasileiro focado em simplicidade, performance e mantido por [@vini0001-art](https://github.com/vini0001-art).
 
 [![npm version](https://badge.fury.io/js/s4ft.svg)](https://badge.fury.io/js/s4ft)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
